@@ -13,12 +13,6 @@ export default {
       name: 'userInfo'
     }
   }
-  // methods:{
-
-  // },
-  // created(){
-
-  // }
 }
 </script>
 
