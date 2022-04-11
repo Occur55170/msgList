@@ -91,7 +91,7 @@
       </div>
     </div>
     <!-- Member -->
-    <AlertMSG/>
+    <AlertMSG class="d-none"></AlertMSG>
   </div>
 </template>
 
