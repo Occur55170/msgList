@@ -7,9 +7,9 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path:'/',
-      name:'articleList',
-      component:()=> import('./views/articleList.vue'),
+      path: '/',
+      name: 'ArticleList',
+      component: () => import('./views/ArticleList.vue')
       // children:[
       //   {
       //     path: 'articleCon',
@@ -24,10 +24,10 @@ export default new Router({
       // ]
     },
     {
-      path: '/articleCon/:id',
-      name: 'articleCon',
-      component: () => import('./views/articleCon.vue')
-    },
+      path: '/ArticleCon/:id',
+      name: 'ArticleCon',
+      component: () => import('./views/ArticleCon.vue')
+    }
 
   ]
 })

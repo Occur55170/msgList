@@ -16,8 +16,6 @@ Vue.use(VueAxios, axios)
 Vue.component('Loading', Loading)
 Vue.config.productionTip = false
 
-// axios.defaults.withCredentials=true;
-
 Object.keys(rules).forEach((rule) => {
   extend(rule, rules[rule])
 })

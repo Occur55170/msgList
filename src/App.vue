@@ -91,13 +91,13 @@
       </div>
     </div>
     <!-- Member -->
-    <alertMSG/>
+    <AlertMSG/>
   </div>
 </template>
 
 <script>
 import $ from 'jquery'
-import alertMSG from './views/alertMSG'
+import AlertMSG from './views/AlertMSG'
 
 export default {
   data () {
@@ -187,7 +187,7 @@ export default {
     }
   },
   components: {
-    alertMSG
+    AlertMSG
   }
 }
 </script>
