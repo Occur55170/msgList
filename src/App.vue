@@ -85,7 +85,7 @@
           </div>
           <div class="modal-footer text-center">
             <p v-if="memberMode=='loginIn'">還沒有會員?<a href="" @click.prevent="memberMode='signUp'">註冊</a></p>
-            <p v-if="memberMode=='signUp'">您已經有帳號了嗎?<a href="" @click.prevent="memberMode='loginIn'">登入</a></p>
+            <p v-if="memberMode=='signUp'">您已經有帳號了嗎?<a href="" @click.prevent="memberMode='loginIn'">登入 </a></p>
           </div>
         </div>
       </div>
