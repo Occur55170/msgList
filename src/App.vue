@@ -8,9 +8,11 @@
           <input type="text" name="" id="">
           <button>搜尋</button>
         </div>
-        <a href="" class="text-white user" @click.prevent="openMember">
+        <!-- <a href="" class="text-white user" @click.prevent="openMember">
           註冊/登入
-        </a>
+        </a> -->
+        <!-- Button trigger modal -->
+        <button type="button" class="member" data-bs-toggle="modal" data-bs-target="#exampleModal">註冊/登入</button>
       </div>
     </header>
     <main>
@@ -21,14 +23,14 @@
       {{msg}}
     </footer>
 
-    <!-- Member -->
-    <div class="modal MemberCon" id="MemberCon">
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title font-weight-bold" v-if="memberMode=='loginIn'">登入會員</h5>
             <h5 class="modal-title font-weight-bold" v-if="memberMode=='signUp'">註冊會員</h5>
-            <button type="button" class="btn-close" @click="closeMember">X</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div v-if="memberMode=='loginIn'">
@@ -75,7 +77,6 @@
                     <span class="invalid-feedback">{{ errors[0] }}</span>
                   </validation-provider>
                   <div class="text-center my-2">
-                    <!-- <button class="btn btn-danger" type="submit" :disabled="invalid">註冊</button> -->
                     <button class="btn btn-danger" type="submit" :disabled="invalid" @click.prevent="memberSignUp">註冊</button>
 
                   </div>
@@ -83,14 +84,13 @@
               </validation-observer>
             </div>
           </div>
-          <div class="modal-footer text-center">
+          <div class="modal-footer">
             <p v-if="memberMode=='loginIn'">還沒有會員?<a href="" @click.prevent="memberMode='signUp'">註冊</a></p>
             <p v-if="memberMode=='signUp'">您已經有帳號了嗎?<a href="" @click.prevent="memberMode='loginIn'">登入</a></p>
           </div>
         </div>
       </div>
     </div>
-    <!-- Member -->
     <AlertMSG class="d-none"></AlertMSG>
   </div>
 </template>
@@ -117,12 +117,6 @@ export default {
     }
   },
   methods: {
-    openMember () {
-      $('#MemberCon').modal('show')
-    },
-    closeMember () {
-      $('#MemberCon').modal('hide')
-    },
     memberSignUp () {
       const vm = this
       // const timestamp = new Date()
@@ -167,23 +161,6 @@ export default {
     },
     loadSta (so) {
       this.isLoading = so
-    },
-    te () {
-      // const vm = this
-      // $('#MemberCon').modal('hide');
-      // vm.$bus.$emit('message:push','您已成功將商品加入購物車','success');
-      $.ajax({
-        url: 'https://script.google.com/macros/s/AKfycbycJmymmXuvih5x4XkN-Ry5S6JgIrd2JhVXgAjWr2Wcm_jYBY4XuA6nuF4GhfRlmih7/exec',
-        type: 'GET',
-        data: '',
-        complete: function (response) {
-          let rdata = JSON.parse(response.responseText)
-          console.log(rdata[0])
-        },
-        success () {
-
-        }
-      })
     }
   },
   components: {
@@ -196,7 +173,7 @@ export default {
 @import '@/assets/scss/all.scss';
 header{
   background:#006aa6;
-  padding: 20px 0;
+  padding: 20px calc((100% - 1000px)/2);
   &>div{
     display: flex;
     justify-content: space-between;
@@ -206,13 +183,13 @@ header{
   }
   .logo{
     color: #fff;
-    font-size:40px;
+    font-size:60px;
     font-weight: bold;
     flex-basis:20%;
     flex-grow:0;
     flex-shrink:0;
     margin-right:20px;
-    text-align:center;
+    text-align: left;
   }
   .searchBar{
     color: #fff;
@@ -243,10 +220,13 @@ header{
       border-left: 0;
     }
   }
-  .user{
+  .member{
     color:#fff;
-    text-decoration:none;
-    width:10%;
+    // text-decoration:none;
+    width:15%;
+    font-size:18px;
+    border:0;
+    background:transparent;
     font-weight:bold;
   }
 }

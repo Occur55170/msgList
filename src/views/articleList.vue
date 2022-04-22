@@ -73,7 +73,7 @@ export default {
 <style lang="scss" scoped>
 .articleList{
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: stretch;
   margin:0 auto;
   aside{
@@ -100,7 +100,7 @@ export default {
   section{
     background:#00324e;
     box-sizing:border-box;
-    width:70%;
+    width:75%;
     padding: 30px;
     border-radius:10px;
     background:#fff;

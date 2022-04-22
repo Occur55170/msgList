@@ -14,91 +14,35 @@
       </div>
     </div>
     <div class="message">
-      <p>共 2 則留言</p>
-      <div>
-        <div class="mainReply">
-          <div class="avatar">
-            <div class="boy"></div>
+      <p>共 {{ messageList.length }} 則留言</p>
+      <ul>
+        <li v-for="(item,key) in messageList" :key="key">
+          <div class="mainReply">
+            <div class="avatar">
+              <div :class="item.mainMsg.male">
+                <i class="fas fa-user"></i>
+              </div>
+            </div>
+            <div>
+              <p class="name">{{ item.mainMsg.author }}</p>
+              <p class="content">{{ item.mainMsg.content }}</p>
+              <p class="time"><span>B{{ key+1 }}</span>{{ item.mainMsg.time }}</p>
+            </div>
           </div>
-          <div>
-            <p class="name">國立臺北科技大學</p>
-            <p class="content">聽海哭夭的聲音</p>
-            <p class="time"><span>B1</span>2022/04/10 12:30</p>
+          <div class="reply" v-for="(reply,index) in item.reply" :key="index">
+            <div class="avatar">
+              <div :class="reply.male">
+                <i class="fas fa-user"></i>
+              </div>
+            </div>
+            <div>
+              <p class="name">{{ reply.author }}</p>
+              <p class="content">{{ reply.content }}</p>
+              <p class="time"><span>B{{ key+1 }}<em>-1</em></span>{{ reply.time }}</p>
+            </div>
           </div>
-        </div>
-        <div class="reply">
-          <div class="avatar">
-            <div class="boy"></div>
-          </div>
-          <div>
-            <p class="name">暨南國際大學</p>
-            <p class="content">幹妳娘我快笑瘋了啦</p>
-            <p class="time"><span>B1<em>-1</em></span>2022/04/10 12:30</p>
-          </div>
-        </div>
-        <div class="reply">
-          <div class="avatar">
-            <div class="girl"></div>
-          </div>
-          <div>
-            <p class="name">南臺科技大學</p>
-            <p class="content">幹妳娘我快笑瘋了啦</p>
-            <p class="time"><span>B1<em>-2</em></span>2022/04/10 12:30</p>
-          </div>
-        </div>
-        <div class="reply">
-          <div class="avatar">
-            <div class="boy"></div>
-          </div>
-          <div>
-            <p class="name">澎湖科大</p>
-            <p class="content">幹妳娘我快笑瘋了啦<br>除非你要餓死了沒有時間考慮別間</p>
-            <p class="time"><span>B1<em>-3</em></span>2022/04/10 12:30</p>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="mainReply">
-          <div class="avatar">
-            <div class="boy"></div>
-          </div>
-          <div>
-            <p class="name">國立臺北科技大學</p>
-            <p class="content">聽海哭夭的聲音</p>
-            <p class="time"><span>B2</span>2022/04/10 12:30</p>
-          </div>
-        </div>
-        <div class="reply">
-          <div class="avatar">
-            <div class="boy"></div>
-          </div>
-          <div>
-            <p class="name">暨南國際大學</p>
-            <p class="content">幹妳娘我快笑瘋了啦</p>
-            <p class="time"><span>B2<em>-1</em></span>2022/04/10 12:30</p>
-          </div>
-        </div>
-        <div class="reply">
-          <div class="avatar">
-            <div class="girl"></div>
-          </div>
-          <div>
-            <p class="name">南臺科技大學</p>
-            <p class="content">幹妳娘我快笑瘋了啦</p>
-            <p class="time"><span>B2<em>-2</em></span>2022/04/10 12:30</p>
-          </div>
-        </div>
-        <div class="reply">
-          <div class="avatar">
-            <div class="boy"></div>
-          </div>
-          <div>
-            <p class="name">澎湖科大</p>
-            <p class="content">幹妳娘我快笑瘋了啦<br>除非你要餓死了沒有時間考慮別間</p>
-            <p class="time"><span>B2<em>-3</em></span>2022/04/10 12:30</p>
-          </div>
-        </div>
-      </div>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -109,7 +53,8 @@ export default {
   data () {
     return {
       Aid: '',
-      article: {}
+      article: {},
+      messageList: []
     }
   },
   methods: {
@@ -119,17 +64,39 @@ export default {
       let formData = JSON.stringify({ 'Aid': vm.Aid })
       let api = `https://script.google.com/macros/s/AKfycbzB5-0GjOcnWU-s0f6eSk1-bIGBn23L8PJL-2dDNDJzoum6YHG2y-J06eq56B7bvvYR/exec`
       vm.$http.post(api, formData).then(response => {
+        console.log(response.data.data)
         vm.article = response.data.data
         vm.$emit('load', false)
       })
     },
     goback () {
       this.$router.push('/')
+    },
+    getMessage () {
+      const vm = this
+      vm.$emit('load', true)
+      let mid = JSON.stringify({ 'mid': vm.Aid })
+      let api = `https://script.google.com/macros/s/AKfycbxiYvMt7eBXlLVGVnRmILwvQSPGCo7tIls4gG7lljfd7KZiLEJ8UjVRffaoKtlRTJZW/exec`
+      vm.$http.post(api, mid).then(response => {
+        console.log(response.data.data)
+        vm.messageList = response.data.data.map(item => {
+          item.mainMsg = JSON.parse(item.mainMsg)
+          if (item.reply.length !== 0) {
+            item.reply = item.reply.map(element => {
+              element = JSON.parse(element)
+              return element
+            })
+          }
+          return item
+        })
+        vm.$emit('load', false)
+      })
     }
   },
   created () {
     this.Aid = this.$route.params.id
     this.getArcitleCon()
+    this.getMessage()
   }
 }
 </script>
@@ -157,16 +124,21 @@ export default {
     background:#f5f5f5;
     border-bottom-left-radius:10px;
     border-bottom-right-radius:10px;
-    p{
-      margin-bottom:0;
+    &>p{
+      margin-bottom:20px;
     }
-    &>div{
-      padding:20px 0;
-      border-top:1px solid #e9e9e9;
-      &:last-Child{
-        border-bottom:1px solid #e9e9e9;
+    ul{
+      padding-left:0;
+      list-style-type:none;
+      &>li{
+        padding:30px 0 0 0;
+        border-top:1px solid #e9e9e9;
+        &:last-Child{
+          border-bottom:1px solid #e9e9e9;
+          margin-bottom:0;
+        }
+        margin-bottom:10px;
       }
-      margin-bottom:10px;
     }
     .avatar{
       margin-right:15px;
@@ -174,6 +146,13 @@ export default {
         width:50px;
         height:50px;
         border-radius:99em;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+      }
+      i{
+        color:#fff;
+        font-size:30px;
       }
       .boy{
         background:#81d4fa;
@@ -190,7 +169,6 @@ export default {
     }
     .reply{
       padding:10px 0;
-      margin-bottom:10px;
       margin-left:60px;
       em{
         font-style:normal;
@@ -200,13 +178,15 @@ export default {
       }
     }
     .name{
-      font-size:14px;
+      font-size:16px;
+      font-weight:bold;
       line-height:1;
       margin-bottom:5px;
     }
     .content{
-      font-size:16px;
-      color:#565656;
+      font-size:18px;
+      margin-bottom:0px;
+      color:#525252;
     }
     .time{
       font-size:14px;
