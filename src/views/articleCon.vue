@@ -43,6 +43,13 @@
           </div>
         </li>
       </ul>
+      <div class="mewMessage">
+        <input type="text" class="mb-3" placeholder="請輸入姓名">
+        <input type="radio" name=""><label for="">男</label>
+        <input type="radio" name=""><label for="">女</label>
+        <textarea name="" id="" cols="30" rows="10"></textarea>
+        <button>送出</button>
+      </div>
     </div>
   </div>
 </template>
@@ -54,7 +61,13 @@ export default {
     return {
       Aid: '',
       article: {},
-      messageList: []
+      messageList: [],
+      mewMessage: {
+        user: {
+          name: '',
+          male: ''
+        }
+      }
     }
   },
   methods: {
@@ -139,62 +152,71 @@ export default {
         }
         margin-bottom:10px;
       }
-    }
-    .avatar{
+      .avatar{
       margin-right:15px;
-      div{
-        width:50px;
-        height:50px;
-        border-radius:99em;
-        display:flex;
-        justify-content:center;
-        align-items:center;
-      }
-      i{
-        color:#fff;
-        font-size:30px;
-      }
-      .boy{
-        background:#81d4fa;
-      }
-      .girl{
-        background:#f48fb1;
-      }
-    }
-    .mainReply{
-      margin-bottom:20px;
-    }
-    .mainReply,.reply{
-      display:flex;
-    }
-    .reply{
-      padding:10px 0;
-      margin-left:60px;
-      em{
-        font-style:normal;
-      }
-      &:last-Child{
-        margin-bottom:0;
-      }
-    }
-    .name{
-      font-size:16px;
-      font-weight:bold;
-      line-height:1;
-      margin-bottom:5px;
-    }
-    .content{
-      font-size:18px;
-      margin-bottom:0px;
-      color:#525252;
-    }
-    .time{
-      font-size:14px;
-      margin-top:10px;
-      span{
-        &::after{
-          content: "・";
+        div{
+          width:50px;
+          height:50px;
+          border-radius:99em;
+          display:flex;
+          justify-content:center;
+          align-items:center;
         }
+        i{
+          color:#fff;
+          font-size:30px;
+        }
+        .boy{
+          background:#81d4fa;
+        }
+        .girl{
+          background:#f48fb1;
+        }
+      }
+      .mainReply{
+        margin-bottom:20px;
+      }
+      .mainReply,.reply{
+        display:flex;
+      }
+      .reply{
+        padding:10px 0;
+        margin-left:60px;
+        em{
+          font-style:normal;
+        }
+        &:last-Child{
+          margin-bottom:0;
+        }
+      }
+      .name{
+        font-size:16px;
+        font-weight:bold;
+        line-height:1;
+        margin-bottom:5px;
+      }
+      .content{
+        font-size:18px;
+        margin-bottom:0px;
+        color:#525252;
+      }
+      .time{
+        font-size:14px;
+        margin-top:10px;
+        span{
+          &::after{
+            content: "・";
+          }
+        }
+      }
+    }
+    .mewMessage{
+      width:100%;
+      textarea{
+        width:100%;
+      }
+      button{
+        margin:0 0 0 auto;
       }
     }
   }
