@@ -43,18 +43,25 @@
           </div>
         </li>
       </ul>
-      <div class="mewMessage">
-        <input type="text" class="mb-3" placeholder="請輸入姓名">
-        <input type="radio" name=""><label for="">男</label>
-        <input type="radio" name=""><label for="">女</label>
-        <textarea name="" id="" cols="30" rows="10"></textarea>
-        <button>送出</button>
+      <div class="newMessage">
+        <input type="text" class="form-control" id="name" name="姓名" v-model.trim="newMessage.author" placeholder="請輸入姓名" required maxlength="20">
+        <div>
+          <input type="radio" id="boy" name="性別" value="boy" v-model="newMessage.male"><label for="boy">男</label>
+          <input type="radio" id="girl" name="性別" value="girl" v-model="newMessage.male"><label for="girl">女</label>
+        </div>
+        <textarea name="" id="" cols="30" rows="10" v-model.trim="newMessage.content"></textarea>
+        <!-- <button class="btn btn-danger" type="submit" @click="addMessage" :disabled="submit">送出</button> -->
+        <!-- <button class="btn btn-danger" style="margin-right: 10px;" type="submit" @click="getMessage">get</button> -->
+        <button class="btn btn-danger" type="submit" @click="addMessage">add</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+// import $ from 'jquery'
+// import axios from 'axios'
+
 export default {
   name: 'articleCon',
   data () {
@@ -62,11 +69,12 @@ export default {
       Aid: '',
       article: {},
       messageList: [],
-      mewMessage: {
-        user: {
-          name: '',
-          male: ''
-        }
+      newMessage: {
+        author: '',
+        male: '',
+        content: '',
+        time: '',
+        good: ''
       }
     }
   },
@@ -77,7 +85,7 @@ export default {
       let formData = JSON.stringify({ 'Aid': vm.Aid })
       let api = `https://script.google.com/macros/s/AKfycbzB5-0GjOcnWU-s0f6eSk1-bIGBn23L8PJL-2dDNDJzoum6YHG2y-J06eq56B7bvvYR/exec`
       vm.$http.post(api, formData).then(response => {
-        console.log(response.data.data)
+        // console.log(response.data.data)
         vm.article = response.data.data
         vm.$emit('load', false)
       })
@@ -89,7 +97,8 @@ export default {
       const vm = this
       vm.$emit('load', true)
       let mid = JSON.stringify({ 'mid': vm.Aid })
-      let api = `https://script.google.com/macros/s/AKfycbxiYvMt7eBXlLVGVnRmILwvQSPGCo7tIls4gG7lljfd7KZiLEJ8UjVRffaoKtlRTJZW/exec`
+      // msgapi
+      let api = `https://script.google.com/macros/s/AKfycbwrLoDh54vq48S5kbwCXSsx3Qq0ev4yH1Q3LH65yCsRoqSRojqqlqxHgGNTN-vOR5tb/exec`
       vm.$http.post(api, mid).then(response => {
         console.log(response.data.data)
         vm.messageList = response.data.data.map(item => {
@@ -104,6 +113,53 @@ export default {
         })
         vm.$emit('load', false)
       })
+    }
+    // addMessage () {
+    //   // msgapi
+    //   const vm = this
+    //   const timestamp = new Date()
+    //   let yyyy = timestamp.getFullYear()
+    //   let mm = timestamp.getMonth() + 1
+    //   let day = timestamp.getDate()
+    //   let hour = timestamp.getHours()
+    //   let min = timestamp.getMinutes()
+    //   let sec = timestamp.getSeconds()
+    //   let time = {
+    //     time: `${yyyy} / ${mm} / ${day}  ${hour}:${min}:${sec}`
+    //   }
+    //   var data = Object.assign({}, vm.newMessage, time)
+    //   console.log(data)
+    //   // data = JSON.stringify(data)
+    //   // console.log(data)
+    //   // 可用ajax
+    //   $.ajax({
+    //     // 這邊用get type
+    //     type: 'get',
+    //     // api url - google appscript 產出的 url
+    //     url: 'https://script.google.com/macros/s/AKfycbwrLoDh54vq48S5kbwCXSsx3Qq0ev4yH1Q3LH65yCsRoqSRojqqlqxHgGNTN-vOR5tb/exec',
+    //     // 剛剛整理好的資料帶入
+    //     data: data,
+    //     // 資料格式是JSON
+    //     dataType: 'JSON',
+    //     // 成功送出 會回頭觸發下面這塊感謝
+    //     success: function (response) {
+    //       console.log(response)
+    //       alert('恭喜成功送出，已具備抽獎資格')
+    //     },
+    //     error: function (response) {
+    //       console.log(response)
+    //       alert('系統出錯，請稍後在試一次或者聯絡客服人員')
+    //     }
+    //   })
+    // }
+  },
+  computed: {
+    submit () {
+      const vm = this
+      if (vm.newMessage.author && vm.newMessage.content && vm.newMessage.male) {
+        return false
+      }
+      return true
     }
   },
   created () {
@@ -210,7 +266,7 @@ export default {
         }
       }
     }
-    .mewMessage{
+    .newMessage{
       width:100%;
       textarea{
         width:100%;
