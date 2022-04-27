@@ -1,12 +1,12 @@
 <template>
   <div class="message-alert">
-    <div class="alert alert-dismissible"
+    <div class="alert"
       :class="'alert-' + item.status"
       v-for="(item, i) in messages" :key="i">
-      {{ item.message }}
-      <button type="button" class="close" @click="removeMessage(i)" aria-label="Close">
+      <span>{{ item.message }}</span>
+      <a  class="close" @click="removeMessage(i)" aria-label="Close">
         <span aria-hidden="true">&times;</span>
-      </button>
+      </a>
     </div>
   </div>
 </template>
@@ -28,6 +28,7 @@ export default {
         timestamp
       })
       this.removeMessageWithTiming(timestamp)
+      console.log(this.messages)
     },
     removeMessage (num) {
       this.messages.splice(num, 1)
@@ -45,15 +46,9 @@ export default {
   },
   created () {
     const vm = this
-
-    // 自定義名稱 'messsage:push'
-    // message: 傳入參數
-    // status: 樣式，預設值為 warning
     vm.$bus.$on('message:push', (message, status = 'warning') => {
-    // vm.$bus.$on('message:push', (message, status = 'warning') => {
       vm.updateMessage(message, status)
     })
-    vm.$bus.$emit('message:push', '新增成功', 'success')
   }
 }
 </script>
@@ -65,5 +60,10 @@ export default {
   top: 56px;
   right: 20px;
   z-index: 1100;
+  .close {
+    cursor: pointer;
+    margin-left:20px;
+    text-decoration:none;
+  }
 }
 </style>

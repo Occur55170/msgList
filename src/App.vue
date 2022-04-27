@@ -8,11 +8,8 @@
           <input type="text" name="" id="">
           <button>搜尋</button>
         </div>
-        <!-- <a href="" class="text-white user" @click.prevent="openMember">
-          註冊/登入
-        </a> -->
-        <!-- Button trigger modal -->
         <button type="button" class="member" data-bs-toggle="modal" data-bs-target="#exampleModal">註冊/登入</button>
+        <a href="#" class="member"></a>
       </div>
     </header>
     <main>
@@ -24,7 +21,7 @@
     </footer>
 
     <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="exampleModal" ref="exampleModal">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -91,51 +88,50 @@
         </div>
       </div>
     </div>
-    <AlertMSG class="d-none"></AlertMSG>
+    <AlertMSG/>
   </div>
 </template>
 
 <script>
-import $ from 'jquery'
-import AlertMSG from './views/AlertMSG'
+// import $ from 'jquery'
+import { Modal } from 'bootstrap'
+import AlertMSG from './components/AlertMSG'
 
 export default {
-  data () {
-    return {
-      msg: 'App',
-      memberMode: 'loginIn',
-      logAc: '',
-      logPwd: '',
-      user: {
-        'type': '',
-        'account': '',
-        'password': '',
-        'name': '',
-        'email': ''
-      },
-      isLoading: false
-    }
-  },
+  data: () => ({
+    msg: 'App',
+    memberMode: 'loginIn',
+    logAc: '',
+    logPwd: '',
+    user: {
+      'type': '',
+      'account': '',
+      'password': '',
+      'name': '',
+      'email': ''
+    },
+    isLoading: false
+  }),
   methods: {
     memberSignUp () {
       const vm = this
-      // const timestamp = new Date()
-      // let yyyy = timestamp.getFullYear(),
-      // mm = timestamp.getMonth() + 1,
-      // day = timestamp.getDate(),
-      // hour = timestamp.getHours(),
-      // min = timestamp.getMinutes(),
-      // sec = timestamp.getSeconds();
+      const timestamp = new Date()
+      let yyyy = timestamp.getFullYear()
+      let mm = timestamp.getMonth() + 1
+      let day = timestamp.getDate()
+      let hour = timestamp.getHours()
+      let min = timestamp.getMinutes()
+      let sec = timestamp.getSeconds()
+      let time = `${yyyy} / ${mm} / ${day}  ${hour}:${min}:${sec}`
       const api = `${process.env.VUE_APP_MEMBER}`
       vm.user.type = vm.memberMode
+      vm.user.time = time
       let formData = JSON.stringify(vm.user)
-      console.log(formData)
       vm.axios.post(api, formData).then(function (response) {
-        console.log(response.data)
-        if (response.data === '註冊成功') {
-          $('#MemberCon').modal('hide')
+        if (response.data[0].message === '註冊成功') {
+          vm.modal.hide()
         } else {
-          console.log(response.data)
+          console.log(response.data[0].message)
         }
       })
     },
@@ -149,22 +145,29 @@ export default {
         'password': vm.logPwd
       })
       vm.axios.post(api, formData).then(function (response) {
-        console.log(response.data[0].success)
+        console.log(response.data[0])
         if (response.data[0].success) {
-          $('#MemberCon').modal('hide')
+          vm.modal.hide()
           console.log(response.data[0].message)
         } else {
           console.log(response.data[0].success)
-          console.log(response.data[0].message)
+          vm.$bus.$emit('message:push', response.data[0].message, 'danger')
+          vm.modal.hide()
         }
       })
     },
     loadSta (so) {
       this.isLoading = so
+    },
+    test () {
+      this.$bus.$emit('message:push', '新增成功', 'success')
     }
   },
   components: {
     AlertMSG
+  },
+  mounted () {
+    this.modal = new Modal(this.$refs.exampleModal)
   }
 }
 </script>
@@ -222,7 +225,6 @@ header{
   }
   .member{
     color:#fff;
-    // text-decoration:none;
     width:15%;
     font-size:18px;
     border:0;

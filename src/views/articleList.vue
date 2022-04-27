@@ -2,11 +2,11 @@
   <div class="articleList">
     <aside>
       <ul>
-        <li><a href="#" v-for="(item,key) in categories" :key="key">{{ key+1 }}.{{ item }}</a></li>
+        <li><a href="#" v-for="(item,key) in category" :key="key" @click="sortName = item">{{ key+1 }}.{{ item }}</a></li>
       </ul>
     </aside>
     <section>
-      <article v-for="(item,key)  in articleList" :key="key">
+      <article v-for="(item,key)  in filterGroup" :key="key">
         <p class="my-2 mb-3">{{item.category}}</p>
         <h3>{{item.title}}</h3>
         <p class="my-2 mb-3">
@@ -17,7 +17,7 @@
         <div class="Info">
           <span>讚</span>
           <span>留言</span>
-          <span>收藏</span>
+          <span><a href="">收藏</a></span>
         </div>
         <a href="" @click.prevent="openArcitle(item.id)"></a>
       </article>
@@ -29,9 +29,10 @@
 // import $ from 'jquery'
 
 export default {
+  name: 'articleList',
   data () {
     return {
-      tit: 'articleList',
+      sortName: '',
       articleList: []
     }
   },
@@ -52,15 +53,23 @@ export default {
     }
   },
   computed: {
-    categories () {
+    category () {
       const vm = this
-      let sort = []
+      let category = []
       vm.articleList.forEach(element => {
-        if (sort.indexOf(element.category) === -1) {
-          sort.push(element.category)
+        if (category.indexOf(element.category) === -1) {
+          category.push(element.category)
         }
       })
-      return sort
+      return category
+    },
+    filterGroup () {
+      const vm = this
+      if (vm.sortName !== '') {
+        return vm.articleList.filter(item => item.category === vm.sortName)
+      } else {
+        return vm.articleList
+      }
     }
   },
   created () {
@@ -126,7 +135,7 @@ export default {
         color:#000;
         font-size:18px;
       }
-      a{
+      &>a{
         position:absolute;
         top:0;
         left:0;
