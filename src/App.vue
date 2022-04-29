@@ -117,10 +117,13 @@ export default {
       'name': '',
       'email': ''
     },
-    // 測試用
-    userID: ''
+    userID: '',
+    search: ''
   }),
   methods: {
+    loadStatus (load) {
+      this.isLoading = load
+    },
     signUp () {
       const vm = this
       const timestamp = new Date()
@@ -180,11 +183,8 @@ export default {
     goUserInfo () {
       this.$router.push(`./UserInfo/${this.userID}`)
     },
-    loadStatus (load) {
-      this.isLoading = load
-    },
-    test () {
-      this.$bus.$emit('message:push', '新增成功', 'success')
+    search () {
+
     }
   },
   components: {
