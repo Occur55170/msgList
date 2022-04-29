@@ -3,17 +3,19 @@
     <loading :active.sync="isLoading"/>
     <header>
       <div>
-        <div class="logo">Occur</div>
+        <div class="logo">
+          <router-link to="/">Occur</router-link>
+        </div>
         <div class="searchBar">
           <input type="text" name="" id="">
           <button>搜尋</button>
         </div>
-        <button type="button" class="member" data-bs-toggle="modal" data-bs-target="#exampleModal">註冊/登入</button>
-        <a href="#" class="member"></a>
+        <a href="#" class="member" v-if="userID" @click.prevent="goUserInfo"><i class="fas fa-user"></i><span class="mx-1">{{ user.name }}</span>你好</a>
+        <button type="button" class="member" data-bs-toggle="modal" data-bs-target="#exampleModal" v-else>註冊/登入</button>
       </div>
     </header>
     <main>
-      <router-view class="section" @load="loadSta"></router-view>
+      <router-view class="section" @load="loadStatus"></router-view>
     </main>
     <footer>
       練習作業用
@@ -98,8 +100,10 @@ import { Modal } from 'bootstrap'
 import AlertMSG from './components/AlertMSG'
 
 export default {
+  name: 'App',
   data: () => ({
     msg: 'App',
+    isLoading: false,
     memberMode: 'loginIn',
     logAc: '',
     logPwd: '',
@@ -110,7 +114,8 @@ export default {
       'name': '',
       'email': ''
     },
-    isLoading: false
+    // 測試用
+    userID: ''
   }),
   methods: {
     memberSignUp () {
@@ -123,12 +128,17 @@ export default {
       let min = timestamp.getMinutes()
       let sec = timestamp.getSeconds()
       let time = `${yyyy} / ${mm} / ${day}  ${hour}:${min}:${sec}`
-      const api = `${process.env.VUE_APP_MEMBER}`
+      const userID = new Date().getTime()
+      const api = `https://script.google.com/macros/s/AKfycbxAXjuXMw2yOWOdZGKx7t6zP2OAIIFmSDBQu0GM8hCHPYRy-y1QLGts_4doAcODixkt/exec`
       vm.user.type = vm.memberMode
       vm.user.time = time
+      vm.user.userID = userID
+      console.log(userID)
       let formData = JSON.stringify(vm.user)
       vm.axios.post(api, formData).then(function (response) {
         if (response.data[0].message === '註冊成功') {
+          console.log(response.data[0].message)
+          vm.$bus.$emit('message:push', response.data[0].message, 'success')
           vm.modal.hide()
         } else {
           console.log(response.data[0].message)
@@ -137,7 +147,7 @@ export default {
     },
     memberLoginIn () {
       const vm = this
-      const api = `${process.env.VUE_APP_MEMBER}`
+      const api = `https://script.google.com/macros/s/AKfycbxAXjuXMw2yOWOdZGKx7t6zP2OAIIFmSDBQu0GM8hCHPYRy-y1QLGts_4doAcODixkt/exec`
       vm.user.type = vm.memberMode
       let formData = JSON.stringify({
         'type': vm.user.type,
@@ -147,8 +157,13 @@ export default {
       vm.axios.post(api, formData).then(function (response) {
         console.log(response.data[0])
         if (response.data[0].success) {
+          vm.$bus.$emit('message:push', response.data[0].message, 'success')
+          // 恢復預設值
+          vm.logAc = ''
+          vm.logPwd = ''
+          vm.userID = response.data[0].userID
+          vm.user.name = response.data[0].name
           vm.modal.hide()
-          console.log(response.data[0].message)
         } else {
           console.log(response.data[0].success)
           vm.$bus.$emit('message:push', response.data[0].message, 'danger')
@@ -156,8 +171,11 @@ export default {
         }
       })
     },
-    loadSta (so) {
-      this.isLoading = so
+    goUserInfo () {
+      this.$router.push(`./UserInfo/${this.userID}`)
+    },
+    loadStatus (load) {
+      this.isLoading = load
     },
     test () {
       this.$bus.$emit('message:push', '新增成功', 'success')
@@ -185,14 +203,17 @@ header{
     margin: 0 auto;
   }
   .logo{
-    color: #fff;
-    font-size:60px;
-    font-weight: bold;
     flex-basis:20%;
     flex-grow:0;
     flex-shrink:0;
     margin-right:20px;
     text-align: left;
+    a{
+      text-decoration:none;
+      color: #fff;
+      font-size:60px;
+      font-weight: bold;
+    }
   }
   .searchBar{
     color: #fff;
