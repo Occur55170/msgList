@@ -10,7 +10,10 @@
           <input type="text" name="" id="">
           <button>搜尋</button>
         </div>
-        <a href="#" class="member" v-if="userID" @click.prevent="goUserInfo"><i class="fas fa-user"></i><span class="mx-1">{{ user.name }}</span>你好</a>
+        <div v-if="userID">
+          <a href="#" class="member" v-if="userID" @click.prevent="goUserInfo"><i class="fas fa-user"></i><span class="mx-1">{{ user.name }}</span>你好</a>
+          <a href="" class="logOut" @click.prevent="logOut">登出</a>
+        </div>
         <button type="button" class="member" data-bs-toggle="modal" data-bs-target="#exampleModal" v-else>註冊/登入</button>
       </div>
     </header>
@@ -34,7 +37,7 @@
           <div class="modal-body">
             <div v-if="memberMode=='loginIn'">
               <validation-observer class="mb-3" v-slot="{ invalid }">
-                <form @submit.prevent="memberLoginIn">
+                <form @submit.prevent="loginIn">
                   <validation-provider rules="required" v-slot="{errors,classes}" class="mb-3 d-block">
                     <label for="account">帳號</label>
                     <input type="text" class="form-control" id="account" :class="classes" name="帳號" v-model.number="logAc" placeholder="帳號" required maxlength="20">
@@ -76,7 +79,7 @@
                     <span class="invalid-feedback">{{ errors[0] }}</span>
                   </validation-provider>
                   <div class="text-center my-2">
-                    <button class="btn btn-danger" type="submit" :disabled="invalid" @click.prevent="memberSignUp">註冊</button>
+                    <button class="btn btn-danger" type="submit" :disabled="invalid" @click.prevent="signUp">註冊</button>
 
                   </div>
                 </form>
@@ -118,7 +121,7 @@ export default {
     userID: ''
   }),
   methods: {
-    memberSignUp () {
+    signUp () {
       const vm = this
       const timestamp = new Date()
       let yyyy = timestamp.getFullYear()
@@ -145,7 +148,7 @@ export default {
         }
       })
     },
-    memberLoginIn () {
+    loginIn () {
       const vm = this
       const api = `https://script.google.com/macros/s/AKfycbxAXjuXMw2yOWOdZGKx7t6zP2OAIIFmSDBQu0GM8hCHPYRy-y1QLGts_4doAcODixkt/exec`
       vm.user.type = vm.memberMode
@@ -170,6 +173,9 @@ export default {
           vm.modal.hide()
         }
       })
+    },
+    logOut () {
+
     },
     goUserInfo () {
       this.$router.push(`./UserInfo/${this.userID}`)
@@ -251,6 +257,10 @@ header{
     border:0;
     background:transparent;
     font-weight:bold;
+  }
+  .logOut{
+    text-decoration:none;
+    color:#fff;
   }
 }
 main{
