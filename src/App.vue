@@ -7,18 +7,20 @@
           <router-link to="/">Occur</router-link>
         </div>
         <div class="searchBar">
-          <input type="text" name="" id="">
-          <button>搜尋</button>
+          <input type="text" name="searchText" id="searchText" v-model.trim="searchText" @keyup.enter="search">
+          <button @click="search">搜尋</button>
         </div>
-        <div v-if="userID">
-          <a href="#" class="member" v-if="userID" @click.prevent="goUserInfo"><i class="fas fa-user"></i><span class="mx-1">{{ user.name }}</span>你好</a>
-          <a href="" class="logOut" @click.prevent="logOut">登出</a>
+        <div class="member">
+          <div v-if="userID">
+            <a href="#" @click.prevent="goUserInfo"><i class="fas fa-user"></i><span class="mx-1">{{ user.name }}</span>你好</a>
+            <a href="" class="logOut" @click.prevent="logOut">登出</a>
+          </div>
+          <button type="button" class="member" data-bs-toggle="modal" data-bs-target="#exampleModal" v-else>註冊/登入</button>
         </div>
-        <button type="button" class="member" data-bs-toggle="modal" data-bs-target="#exampleModal" v-else>註冊/登入</button>
       </div>
     </header>
     <main>
-      <router-view class="section" @load="loadStatus"></router-view>
+      <router-view class="section" :searchText="searchText" :userID="userID" @openLoginIn="openLoginIn"></router-view>
     </main>
     <footer>
       練習作業用
@@ -100,13 +102,13 @@
 <script>
 // import $ from 'jquery'
 import { Modal } from 'bootstrap'
+import { mapGetters } from 'vuex'
 import AlertMSG from './components/AlertMSG'
 
 export default {
   name: 'App',
   data: () => ({
     msg: 'App',
-    isLoading: false,
     memberMode: 'loginIn',
     logAc: '',
     logPwd: '',
@@ -118,14 +120,12 @@ export default {
       'email': ''
     },
     userID: '',
-    search: ''
+    searchText: ''
   }),
   methods: {
-    loadStatus (load) {
-      this.isLoading = load
-    },
     signUp () {
       const vm = this
+      vm.$store.dispatch('upadateisLoad', true)
       const timestamp = new Date()
       let yyyy = timestamp.getFullYear()
       let mm = timestamp.getMonth() + 1
@@ -135,11 +135,10 @@ export default {
       let sec = timestamp.getSeconds()
       let time = `${yyyy} / ${mm} / ${day}  ${hour}:${min}:${sec}`
       const userID = new Date().getTime()
-      const api = `https://script.google.com/macros/s/AKfycbxAXjuXMw2yOWOdZGKx7t6zP2OAIIFmSDBQu0GM8hCHPYRy-y1QLGts_4doAcODixkt/exec`
+      const api = `${process.env.VUE_APP_MEMBER}`
       vm.user.type = vm.memberMode
       vm.user.time = time
       vm.user.userID = userID
-      console.log(userID)
       let formData = JSON.stringify(vm.user)
       vm.axios.post(api, formData).then(function (response) {
         if (response.data[0].message === '註冊成功') {
@@ -149,11 +148,13 @@ export default {
         } else {
           console.log(response.data[0].message)
         }
+        vm.$store.dispatch('upadateisLoad', false)
       })
     },
     loginIn () {
       const vm = this
-      const api = `https://script.google.com/macros/s/AKfycbxAXjuXMw2yOWOdZGKx7t6zP2OAIIFmSDBQu0GM8hCHPYRy-y1QLGts_4doAcODixkt/exec`
+      vm.$store.dispatch('upadateisLoad', true)
+      const api = `${process.env.VUE_APP_MEMBER}`
       vm.user.type = vm.memberMode
       let formData = JSON.stringify({
         'type': vm.user.type,
@@ -161,7 +162,6 @@ export default {
         'password': vm.logPwd
       })
       vm.axios.post(api, formData).then(function (response) {
-        console.log(response.data[0])
         if (response.data[0].success) {
           vm.$bus.$emit('message:push', response.data[0].message, 'success')
           // 恢復預設值
@@ -175,23 +175,53 @@ export default {
           vm.$bus.$emit('message:push', response.data[0].message, 'danger')
           vm.modal.hide()
         }
+        vm.$store.dispatch('upadateisLoad', false)
       })
     },
     logOut () {
-
+      const vm = this
+      vm.$store.dispatch('upadateisLoad', true)
+      const api = `${process.env.VUE_APP_MEMBER}`
+      vm.user.type = vm.memberMode
+      let formData = JSON.stringify({
+        'type': 'logOut',
+        'userID': vm.userID
+      })
+      vm.axios.post(api, formData).then(function (response) {
+        console.log(response.data[0])
+        if (response.data[0].success) {
+          vm.userID = ''
+          vm.$bus.$emit('message:push', response.data[0].message, 'success')
+        }
+        vm.$store.dispatch('upadateisLoad', false)
+      })
     },
     goUserInfo () {
-      this.$router.push(`./UserInfo/${this.userID}`)
+      console.log(this.$route.name)
+      if (this.$route.name !== 'UserInfo') {
+        this.$router.push(`/UserInfo/${this.userID}`)
+      }
+    },
+    openLoginIn () {
+      this.memberMode = 'loginIn'
+      this.modal.show()
     },
     search () {
-
+      const vm = this
+      console.log(vm.searchText)
     }
+  },
+  computed: {
+    // isLoading
+    ...mapGetters(['isLoading'])
   },
   components: {
     AlertMSG
   },
   mounted () {
+    // this.$store.dispatch('upadateisLoad', true)
     this.modal = new Modal(this.$refs.exampleModal)
+    // this.getlogStatus()
   }
 }
 </script>
@@ -209,24 +239,22 @@ header{
     margin: 0 auto;
   }
   .logo{
-    flex-basis:20%;
+    flex-basis:200px;
     flex-grow:0;
     flex-shrink:0;
-    margin-right:20px;
     text-align: left;
     a{
       text-decoration:none;
       color: #fff;
-      font-size:60px;
+      font-size:48px;
       font-weight: bold;
     }
   }
   .searchBar{
     color: #fff;
     flex-grow: 2;
-    flex-shrink: 2;
+    flex-shrink: 1;
     width: 100%;
-    padding:0 3%;
     box-sizing:border-box;
     display: flex;
     input{
@@ -251,12 +279,17 @@ header{
     }
   }
   .member{
+    flex-shrink: 0;
     color:#fff;
-    width:15%;
+    margin-left:15px;
     font-size:18px;
     border:0;
     background:transparent;
     font-weight:bold;
+    max-width:200px;
+    a{
+      color:#fff;
+    }
   }
   .logOut{
     text-decoration:none;

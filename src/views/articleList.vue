@@ -2,10 +2,13 @@
   <div class="articleList">
     <aside>
       <ul>
-        <li><a href="#" v-for="(item,key) in category" :key="key" @click="sortName = item">{{ key+1 }}.{{ item }}</a></li>
+        <li><a href="#" v-for="(item,key) in category" :key="key" @click="updateSortName(item)" :class="{'activeSort': sortName == item}">{{ key+1 }}.{{ item }}</a></li>
       </ul>
     </aside>
     <section>
+      <div v-if="filterGroup.length == 0">
+        <p>你所搜尋的項目暫時沒有相關文章喔</p>
+      </div>
       <article v-for="(item,key)  in filterGroup" :key="key">
         <p class="my-2 mb-3">{{item.category}}</p>
         <h3>{{item.title}}</h3>
@@ -36,20 +39,28 @@ export default {
       articleList: []
     }
   },
+  props: ['searchText'],
   methods: {
     getArcitleList () {
       const vm = this
-      vm.$emit('load', true)
+      vm.$store.dispatch('upadateisLoad', true)
       let formData = JSON.stringify({ 'Aid': '' })
       let api = `https://script.google.com/macros/s/AKfycbzB5-0GjOcnWU-s0f6eSk1-bIGBn23L8PJL-2dDNDJzoum6YHG2y-J06eq56B7bvvYR/exec`
       vm.$http.post(api, formData).then(response => {
-        console.log(response.data)
         vm.articleList = response.data
-        vm.$emit('load', false)
+        vm.$store.dispatch('upadateisLoad', false)
       })
     },
     openArcitle (Aid) {
       this.$router.push(`/articleCon/${Aid}`)
+    },
+    updateSortName (item) {
+      const vm = this
+      if (vm.sortName !== item) {
+        vm.sortName = item
+      } else {
+        vm.sortName = ''
+      }
     }
   },
   computed: {
@@ -65,8 +76,14 @@ export default {
     },
     filterGroup () {
       const vm = this
-      if (vm.sortName !== '') {
+      if (vm.sortName !== '' && vm.searchText !== '') {
+        return vm.articleList.filter(item => {
+          return item.category === vm.sortName && item.title.indexOf(vm.searchText) !== -1
+        })
+      } else if (vm.sortName !== '') {
         return vm.articleList.filter(item => item.category === vm.sortName)
+      } else if (vm.searchText !== '') {
+        return vm.articleList.filter(item => item.title.indexOf(vm.searchText) !== -1)
       } else {
         return vm.articleList
       }
@@ -74,7 +91,7 @@ export default {
   },
   created () {
     this.getArcitleList()
-    this.$emit('load', true)
+    this.$store.dispatch('upadateisLoad', true)
   }
 }
 </script>
@@ -87,7 +104,6 @@ export default {
   margin:0 auto;
   aside{
     width:20%;
-    margin-right:20px;
     ul{
       padding-left:0;
       margin: 20px 0;
@@ -104,12 +120,17 @@ export default {
         background-color: rgba(0, 0, 0, 0.35);
         color: #fff;
       }
+      &.activeSort{
+        background-color: rgba(255, 255, 255, 0.3);
+        color: #fff;
+        font-weight:bold;
+      }
     }
   }
   section{
     background:#00324e;
     box-sizing:border-box;
-    width:75%;
+    width:80%;
     padding: 30px;
     border-radius:10px;
     background:#fff;

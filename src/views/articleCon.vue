@@ -44,6 +44,9 @@
         </li>
       </ul>
       <div class="newMessage">
+        <div class="closeMessage" v-if="switchMSG">
+          <a href="" @click.prevent="openLoginIn">請先登入在留言</a>
+        </div>
         <input type="text" class="form-control" id="name" name="姓名" v-model.trim="newMessage.author" placeholder="請輸入姓名" required maxlength="20">
         <div>
           <input type="radio" id="boy" name="性別" value="boy" v-model="newMessage.male"><label for="boy">男</label>
@@ -73,19 +76,19 @@ export default {
         content: '',
         time: '',
         good: ''
-      },
-      RWW: ''
+      }
     }
   },
+  props: ['userID'],
   methods: {
     getArcitleCon () {
       const vm = this
-      vm.$emit('load', true)
+      this.$store.dispatch('upadateisLoad', true)
       let formData = JSON.stringify({ 'Aid': vm.Aid })
       let api = `https://script.google.com/macros/s/AKfycbzB5-0GjOcnWU-s0f6eSk1-bIGBn23L8PJL-2dDNDJzoum6YHG2y-J06eq56B7bvvYR/exec`
       vm.$http.post(api, formData).then(response => {
         vm.article = response.data.data
-        vm.$emit('load', false)
+        vm.$store.dispatch('upadateisLoad', false)
       })
     },
     goback () {
@@ -93,7 +96,7 @@ export default {
     },
     getMessage () {
       const vm = this
-      vm.$emit('load', true)
+      this.$store.dispatch('upadateisLoad', true)
       let mid = { 'mid': vm.Aid }
       let api = `https://script.google.com/macros/s/AKfycbzGLZ8zt7tHLrNGbklRSa3SdHDKaoww9Rc2JfEMyuxscv-F9ADTdzyLnqnZHilZFIj7/exec`
       $.ajax({
@@ -114,10 +117,10 @@ export default {
                 vm.newMessage.author = ''
                 vm.newMessage.male = ''
                 vm.newMessage.content = ''
-                vm.$emit('load', false)
               }
             })
           }
+          vm.$store.dispatch('upadateisLoad', false)
         },
         error: function (response) {
           console.log(response)
@@ -155,6 +158,9 @@ export default {
           alert('系統出錯，請稍後在試一次或者聯絡客服人員')
         }
       })
+    },
+    openLoginIn () {
+      this.$emit('openLoginIn')
     }
   },
   computed: {
@@ -164,6 +170,14 @@ export default {
         return false
       }
       return true
+    },
+    switchMSG () {
+      const userID = this.userID
+      if (userID !== '') {
+        return false
+      } else {
+        return true
+      }
     }
   },
   created () {
@@ -213,7 +227,7 @@ export default {
         margin-bottom:10px;
       }
       .avatar{
-      margin-right:15px;
+        margin-right:15px;
         div{
           width:50px;
           height:50px;
@@ -272,11 +286,30 @@ export default {
     }
     .newMessage{
       width:100%;
+      position:relative;
       textarea{
         width:100%;
       }
       button{
         margin:0 0 0 auto;
+      }
+      .closeMessage{
+        background:rgba(0, 0, 0, .5);
+        box-sizing:border-box;
+        box-shadow:0 0 4px 4px rgba(0, 0, 0, .2);
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        opacity: 0.5;
+        a{
+          font-size: 30px;
+          color:blue;
+        }
       }
     }
   }

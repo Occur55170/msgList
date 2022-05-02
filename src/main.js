@@ -9,6 +9,7 @@ import TW from 'vee-validate/dist/locale/zh_TW.json'
 import * as rules from 'vee-validate/dist/rules'
 import App from './App'
 import router from './router'
+import store from './store'
 import './bus'
 
 Vue.config.productionTip = false
@@ -33,5 +34,6 @@ configure({
 
 new Vue({
   router,
+  store,
   render: h => h(App)
 }).$mount('#app')
