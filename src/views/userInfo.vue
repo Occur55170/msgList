@@ -1,13 +1,13 @@
 <template>
   <div class="userInfo">
     <h1>userInfo</h1>
-    <p>使用者姓名 {{ user.name }}</p>
-    <p>使用者帳號 {{ user.account }}</p>
-    <p>使用者密碼 {{ user.password }}</p>
-    <p>使用者信箱 {{ user.email }}</p>
-    <p>註冊日期 {{ user.signDate }}</p>
-    <p>收藏文章 {{ user.collect }}</p>
-    <p>說讚的文章 {{ user.likeList }}</p>
+    <p>使用者姓名:{{ user.name }}</p>
+    <p>使用者帳號:{{ user.account }}</p>
+    <p>使用者密碼:{{ user.password }}</p>
+    <p>使用者信箱:{{ user.email }}</p>
+    <p>註冊日期:{{ user.signDate }}</p>
+    <p>收藏文章:{{ user.collect }}</p>
+    <p>說讚的文章:{{ user.likeList }}</p>
     <div class="textContent">
     </div>
   </div>
@@ -35,12 +35,38 @@ export default {
     }
   },
   methods: {
-    getUser (userID) {
+    loadStatus (userID) {
       const vm = this
-      vm.$emit('load', true)
+      vm.$store.dispatch('upadateisLoad', true)
       const api = `${process.env.VUE_APP_MEMBER}`
       let data = { 'userID': userID }
-      console.log(userID)
+      if (userID !== '') {
+        $.ajax({
+          type: 'get',
+          url: api,
+          data: data,
+          success: response => {
+            response = JSON.parse(response)
+            if (response.success) {
+              this.getUser(this.$route.params.id)
+            } else {
+              console.log(response)
+              vm.$router.push('/')
+              vm.$store.dispatch('upadateisLoad', false)
+            }
+          },
+          error: response => {
+            console.log(response)
+          }
+        })
+      } else {
+        console.log('尚未登入')
+      }
+    },
+    getUser (userID) {
+      const vm = this
+      const api = `${process.env.VUE_APP_MEMBER}`
+      let data = { 'userID': userID }
       $.ajax({
         type: 'get',
         url: api,
@@ -58,18 +84,17 @@ export default {
             'time': response.userData.time,
             'userID': response.userData.userID
           }
-          vm.$emit('load', false)
+          vm.$store.dispatch('upadateisLoad', false)
         },
         error: function (response) {
-          console.log(response)
-          vm.$emit('load', false)
+          vm.$store.dispatch('upadateisLoad', false)
           alert('系統出錯，請稍後在試一次或者聯絡客服人員')
         }
       })
     }
   },
   created () {
-    this.getUser(this.$route.params.id)
+    this.loadStatus(this.$route.params.id)
   }
 }
 </script>

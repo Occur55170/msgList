@@ -28,7 +28,6 @@ export default {
         timestamp
       })
       this.removeMessageWithTiming(timestamp)
-      console.log(this.messages)
     },
     removeMessage (num) {
       this.messages.splice(num, 1)

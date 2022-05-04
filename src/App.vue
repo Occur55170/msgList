@@ -20,11 +20,10 @@
       </div>
     </header>
     <main>
-      <router-view class="section" :searchText="searchText" :userID="userID" @openLoginIn="openLoginIn"></router-view>
+      <router-view class="section" :searchText="searchText" :userID="userID" :user="user" @openLoginIn="openLoginIn"></router-view>
     </main>
     <footer>
-      練習作業用
-      {{msg}}
+      練習作業用網站
     </footer>
 
     <!-- Modal -->
@@ -65,6 +64,15 @@
                     <input type="text" class="form-control" :class="classes" name="名稱" id="username" v-model.trim="user.name" placeholder="輸入名稱">
                     <span class="invalid-feedback">{{ errors[0] }}</span>
                   </validation-provider>
+                  <ValidationProvider rules="oneOf:boy,girl" name="male" v-slot="{ errors }" class="mb-3 d-block">
+                    <label>
+                      <input type="radio" value="boy" v-model="user.male">男
+                    </label>
+                    <label>
+                      <input type="radio" value="girl" v-model="user.male">女
+                    </label>
+                    <span>{{ errors[0] }}</span>
+                  </ValidationProvider>
                   <validation-provider rules="required|email" v-slot="{ errors,classes }" class="mb-3 d-block">
                     <label for="email">收件人信箱</label>
                     <input type="text" class="form-control" :class="classes" name="信箱" id="email" v-model.trim="user.email" placeholder="輸入信箱">
@@ -108,17 +116,10 @@ import AlertMSG from './components/AlertMSG'
 export default {
   name: 'App',
   data: () => ({
-    msg: 'App',
     memberMode: 'loginIn',
     logAc: '',
     logPwd: '',
-    user: {
-      'type': '',
-      'account': '',
-      'password': '',
-      'name': '',
-      'email': ''
-    },
+    user: {},
     userID: '',
     searchText: ''
   }),
@@ -137,6 +138,7 @@ export default {
       const userID = new Date().getTime()
       const api = `${process.env.VUE_APP_MEMBER}`
       vm.user.type = vm.memberMode
+      vm.user.male = 'boy'
       vm.user.time = time
       vm.user.userID = userID
       let formData = JSON.stringify(vm.user)
@@ -169,6 +171,7 @@ export default {
           vm.logPwd = ''
           vm.userID = response.data[0].userID
           vm.user.name = response.data[0].name
+          vm.user.male = response.data[0].male
           vm.modal.hide()
         } else {
           console.log(response.data[0].success)
@@ -190,7 +193,10 @@ export default {
       vm.axios.post(api, formData).then(function (response) {
         console.log(response.data[0])
         if (response.data[0].success) {
+          // 恢復預設值
           vm.userID = ''
+          vm.logAc = ''
+          vm.logPwd = ''
           vm.$bus.$emit('message:push', response.data[0].message, 'success')
         }
         vm.$store.dispatch('upadateisLoad', false)

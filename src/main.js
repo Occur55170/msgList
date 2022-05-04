@@ -9,7 +9,7 @@ import TW from 'vee-validate/dist/locale/zh_TW.json'
 import * as rules from 'vee-validate/dist/rules'
 import App from './App'
 import router from './router'
-import store from './store'
+import store from './store/store'
 import './bus'
 
 Vue.config.productionTip = false

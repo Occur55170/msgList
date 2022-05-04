@@ -28,8 +28,13 @@
               <p class="content">{{ item.mainMsg.content }}</p>
               <p class="time"><span>B{{ key+1 }}</span>{{ item.mainMsg.time }}</p>
             </div>
+            <a href="" class="del" @click.prevent="delMessage(item.mainMsg.msgID)">刪除</a>
+            <div class="features">
+              <a href="" class="mx-2" @click.prevent="addReply(item.mainMsg.msgID)">回覆留言</a>
+              <a href="" class="mx-2" @click.prevent="addGood()">讚</a>
+            </div>
           </div>
-          <div class="reply" v-for="(reply,index) in item.reply" :key="index">
+          <div class="reply mt-4" v-for="(reply,index) in item.reply" :key="index">
             <div class="avatar">
               <div :class="reply.male">
                 <i class="fas fa-user"></i>
@@ -40,17 +45,17 @@
               <p class="content">{{ reply.content }}</p>
               <p class="time"><span>B{{ key+1 }}<em>-1</em></span>{{ reply.time }}</p>
             </div>
+            <a href="" class="del" @click.prevent="delMessage(reply.msgID)">刪除</a>
+            <div class="features">
+              <!-- <a href="" class="mx-2" @click.prevent="addReply">回覆留言</a> -->
+              <a href="" class="mx-2" @click.prevent="addGood">讚</a>
+            </div>
           </div>
         </li>
       </ul>
       <div class="newMessage">
         <div class="closeMessage" v-if="switchMSG">
           <a href="" @click.prevent="openLoginIn">請先登入在留言</a>
-        </div>
-        <input type="text" class="form-control" id="name" name="姓名" v-model.trim="newMessage.author" placeholder="請輸入姓名" required maxlength="20">
-        <div>
-          <input type="radio" id="boy" name="性別" value="boy" v-model="newMessage.male"><label for="boy">男</label>
-          <input type="radio" id="girl" name="性別" value="girl" v-model="newMessage.male"><label for="girl">女</label>
         </div>
         <textarea name="" id="" cols="30" rows="10" v-model.trim="newMessage.content"></textarea>
         <button class="btn btn-danger" type="submit" @click="addMessage" :disabled="submit">送出</button>
@@ -71,15 +76,14 @@ export default {
       article: {},
       messageList: [],
       newMessage: {
-        author: '',
-        male: '',
         content: '',
         time: '',
         good: ''
-      }
+      },
+      testUrl: 'https://script.google.com/macros/s/AKfycbxuQ74bSb1_d-sjhbBpgv7d3n0zHJKwN3vzg8hHfecfr44WFzF85_xP328GGJrqAg6j/exec'
     }
   },
-  props: ['userID'],
+  props: ['userID', 'user'],
   methods: {
     getArcitleCon () {
       const vm = this
@@ -98,9 +102,10 @@ export default {
       const vm = this
       this.$store.dispatch('upadateisLoad', true)
       let mid = { 'mid': vm.Aid }
-      let api = `https://script.google.com/macros/s/AKfycbzGLZ8zt7tHLrNGbklRSa3SdHDKaoww9Rc2JfEMyuxscv-F9ADTdzyLnqnZHilZFIj7/exec`
       $.ajax({
-        url: api,
+        type: 'get',
+        // url: `${process.env.VUE_APP_MESSAGE}`,
+        url: vm.testUrl,
         data: mid,
         dataType: 'JSON',
         success: function (response) {
@@ -127,9 +132,109 @@ export default {
         }
       })
     },
+    openLoginIn () {
+      this.$emit('openLoginIn')
+    },
     addMessage () {
       const vm = this
-      vm.$emit('load', true)
+      vm.$store.dispatch('upadateisLoad', true)
+      const timestamp = new Date()
+      let yyyy = timestamp.getFullYear()
+      let mm = timestamp.getMonth() + 1
+      let day = timestamp.getDate()
+      let hour = timestamp.getHours()
+      let min = timestamp.getMinutes()
+      let sec = timestamp.getSeconds()
+      let time = `${yyyy} / ${mm} / ${day}  ${hour}:${min}:${sec}`
+      let msgID = `${vm.Aid}-${new Date().getTime()}`
+      var data = {
+        'mode': 'addMessage',
+        'mid': vm.Aid,
+        'author': vm.user.name,
+        'userID': vm.userID,
+        'male': vm.user.male,
+        'content': vm.newMessage.content,
+        'time': time,
+        'good': 0,
+        'msgID': msgID
+      }
+      $.ajax({
+        type: 'post',
+        // url: `${process.env.VUE_APP_MESSAGE}`,
+        url: vm.testUrl,
+        data: data,
+        success: function (response) {
+          response = JSON.parse(response)[0]
+          console.log('add', response)
+          if (response.success) {
+            vm.getMessage()
+            // vm.$store.dispatch('upadateisLoad', false)
+          } else {
+            console.log(response)
+            vm.$store.dispatch('upadateisLoad', false)
+          }
+        },
+        error: function (response) {
+          console.log(response)
+          alert('系統出錯，請稍後在試一次或者聯絡客服人員')
+          vm.$store.dispatch('upadateisLoad', false)
+        }
+      })
+    },
+    delMessage (msgID) {
+      const vm = this
+      this.$store.dispatch('upadateisLoad', true)
+      let data = {
+        'mode': 'delMessage',
+        'mid': vm.Aid,
+        'msgID': msgID
+      }
+      $.ajax({
+        type: 'post',
+        // url: `${process.env.VUE_APP_MESSAGE}`,
+        url: vm.testUrl,
+        data: data,
+        success: function (response) {
+          response = JSON.parse(response)[0]
+          console.log('del', response)
+          if (response.success) {
+            vm.getMessage()
+            // vm.$store.dispatch('upadateisLoad', false)
+          } else {
+            console.log(response)
+            vm.$store.dispatch('upadateisLoad', false)
+          }
+        },
+        error: function (response) {
+          console.log(response)
+        }
+      })
+    },
+    addGood (msgID) {
+      const vm = this
+      this.$store.dispatch('upadateisLoad', true)
+      let data = {
+        'mode': 'addGood',
+        'msgID': msgID
+      }
+      $.ajax({
+        type: 'get',
+        // url: `${process.env.VUE_APP_MESSAGE}`,
+        url: vm.testUrl,
+        data: data,
+        dataType: 'JSON',
+        success: function (response) {
+          console.log(response)
+          vm.$store.dispatch('upadateisLoad', false)
+        },
+        error: function (response) {
+          console.log(response)
+        }
+      })
+    },
+    addReply (msgID) {
+      const vm = this
+      vm.$store.dispatch('upadateisLoad', true)
       const timestamp = new Date()
       let yyyy = timestamp.getFullYear()
       let mm = timestamp.getMonth() + 1
@@ -139,34 +244,46 @@ export default {
       let sec = timestamp.getSeconds()
       let time = `${yyyy} / ${mm} / ${day}  ${hour}:${min}:${sec}`
       var data = {
+        'mode': 'addReply',
         'mid': vm.Aid,
-        'author': vm.newMessage.author,
-        'male': vm.newMessage.male,
+        'author': vm.user.name,
+        'userID': vm.userID,
+        'male': vm.user.male,
+        // 跟新增留言相同，考慮修改
         'content': vm.newMessage.content,
+        // 跟新增留言相同，考慮修改
         'time': time,
-        'good': 0
+        'good': 0,
+        'msgID': msgID
       }
+      console.log(data)
       $.ajax({
         type: 'post',
-        url: 'https://script.google.com/macros/s/AKfycbzGLZ8zt7tHLrNGbklRSa3SdHDKaoww9Rc2JfEMyuxscv-F9ADTdzyLnqnZHilZFIj7/exec',
+        url: vm.testUrl,
         data: data,
         success: function (response) {
-          vm.getMessage()
+          console.log(response)
+          response = JSON.parse(response)[0]
+          console.log('add', response)
+          if (response.success) {
+            vm.getMessage()
+          } else {
+            console.log(response)
+            vm.$store.dispatch('upadateisLoad', false)
+          }
         },
         error: function (response) {
           console.log(response)
           alert('系統出錯，請稍後在試一次或者聯絡客服人員')
+          vm.$store.dispatch('upadateisLoad', false)
         }
       })
-    },
-    openLoginIn () {
-      this.$emit('openLoginIn')
     }
   },
   computed: {
     submit () {
       const vm = this
-      if (vm.newMessage.author && vm.newMessage.content && vm.newMessage.male) {
+      if (vm.newMessage.content) {
         return false
       }
       return true
@@ -182,6 +299,7 @@ export default {
   },
   created () {
     this.Aid = this.$route.params.id
+    console.log(this.user)
     this.getArcitleCon()
     this.getMessage()
   }
@@ -252,6 +370,8 @@ export default {
       }
       .mainReply,.reply{
         display:flex;
+        flex-wrap:wrap;
+        position:relative;
       }
       .reply{
         padding:10px 0;
@@ -282,6 +402,14 @@ export default {
             content: "・";
           }
         }
+      }
+      .del{
+        position:absolute;
+        top:0;
+        right:0;
+      }
+      .features{
+        width:100%;
       }
     }
     .newMessage{
