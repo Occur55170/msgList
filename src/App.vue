@@ -10,12 +10,12 @@
           <input type="text" name="searchText" id="searchText" v-model.trim="searchText" @keyup.enter="search">
           <button @click="search">搜尋</button>
         </div>
-        <div class="member">
+        <div class="user">
           <div v-if="userID">
-            <a href="#" @click.prevent="goUserInfo"><i class="fas fa-user"></i><span class="mx-1">{{ user.name }}</span>你好</a>
-            <a href="" class="logOut" @click.prevent="logOut">登出</a>
+            <p class="mx-2 d-block mb-0"><a href="#" @click.prevent="goUserInfo"><i class="fas fa-user"></i><span class="mx-1">{{ user.name }}</span></a>你好</p>
+            <a href="#" class="logOut" @click.prevent="logOut">登出</a>
           </div>
-          <button type="button" class="member" data-bs-toggle="modal" data-bs-target="#exampleModal" v-else>註冊/登入</button>
+          <button type="button" class="user" data-bs-toggle="modal" data-bs-target="#exampleModal" v-else>註冊/登入</button>
         </div>
       </div>
     </header>
@@ -31,12 +31,12 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title font-weight-bold" v-if="memberMode=='loginIn'">登入會員</h5>
-            <h5 class="modal-title font-weight-bold" v-if="memberMode=='signUp'">註冊會員</h5>
+            <h5 class="modal-title font-weight-bold" v-if="userMode=='loginIn'">登入會員</h5>
+            <h5 class="modal-title font-weight-bold" v-if="userMode=='signUp'">註冊會員</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <div v-if="memberMode=='loginIn'">
+            <div v-if="userMode=='loginIn'">
               <validation-observer class="mb-3" v-slot="{ invalid }">
                 <form @submit.prevent="loginIn">
                   <validation-provider rules="required" v-slot="{errors,classes}" class="mb-3 d-block">
@@ -55,10 +55,10 @@
                 </form>
               </validation-observer>
             </div>
-            <div v-if="memberMode=='signUp'">
+            <div v-if="userMode=='signUp'">
               <validation-observer class="mb-3" v-slot="{ invalid }">
                 <form >
-                <!-- <form @submit.prevent="memberData"> -->
+                <!-- <form @submit.prevent="userData"> -->
                   <validation-provider rules="required" v-slot="{ errors,classes }" class="mb-3 d-block">
                     <label for="username">名稱</label>
                     <input type="text" class="form-control" :class="classes" name="名稱" id="username" v-model.trim="user.name" placeholder="輸入名稱">
@@ -97,8 +97,8 @@
             </div>
           </div>
           <div class="modal-footer">
-            <p v-if="memberMode=='loginIn'">還沒有會員?<a href="" @click.prevent="memberMode='signUp'">註冊</a></p>
-            <p v-if="memberMode=='signUp'">您已經有帳號了嗎?<a href="" @click.prevent="memberMode='loginIn'">登入</a></p>
+            <p v-if="userMode=='loginIn'">還沒有會員?<a href="" @click.prevent="userMode='signUp'">註冊</a></p>
+            <p v-if="userMode=='signUp'">您已經有帳號了嗎?<a href="" @click.prevent="userMode='loginIn'">登入</a></p>
           </div>
         </div>
       </div>
@@ -116,7 +116,7 @@ import AlertMSG from './components/AlertMSG'
 export default {
   name: 'App',
   data: () => ({
-    memberMode: 'loginIn',
+    userMode: 'loginIn',
     logAc: '',
     logPwd: '',
     user: {},
@@ -136,8 +136,8 @@ export default {
       let sec = timestamp.getSeconds()
       let time = `${yyyy} / ${mm} / ${day}  ${hour}:${min}:${sec}`
       const userID = new Date().getTime()
-      const api = `${process.env.VUE_APP_MEMBER}`
-      vm.user.type = vm.memberMode
+      const api = `${process.env.VUE_APP_USER}`
+      vm.user.type = vm.userMode
       vm.user.male = 'boy'
       vm.user.time = time
       vm.user.userID = userID
@@ -156,8 +156,8 @@ export default {
     loginIn () {
       const vm = this
       vm.$store.dispatch('upadateisLoad', true)
-      const api = `${process.env.VUE_APP_MEMBER}`
-      vm.user.type = vm.memberMode
+      const api = `${process.env.VUE_APP_USER}`
+      vm.user.type = vm.userMode
       let formData = JSON.stringify({
         'type': vm.user.type,
         'account': vm.logAc,
@@ -184,8 +184,8 @@ export default {
     logOut () {
       const vm = this
       vm.$store.dispatch('upadateisLoad', true)
-      const api = `${process.env.VUE_APP_MEMBER}`
-      vm.user.type = vm.memberMode
+      const api = `${process.env.VUE_APP_USER}`
+      vm.user.type = vm.userMode
       let formData = JSON.stringify({
         'type': 'logOut',
         'userID': vm.userID
@@ -199,17 +199,19 @@ export default {
           vm.logPwd = ''
           vm.$bus.$emit('message:push', response.data[0].message, 'success')
         }
+        // 登出後 看要回此頁，但是不可在使用者頁面
+        vm.$router.push('/')
+        // 登出後 看要回此頁，但是不可在使用者頁面
         vm.$store.dispatch('upadateisLoad', false)
       })
     },
     goUserInfo () {
-      console.log(this.$route.name)
-      if (this.$route.name !== 'UserInfo') {
-        this.$router.push(`/UserInfo/${this.userID}`)
+      if (this.$route.name !== 'MemberInfo') {
+        this.$router.push(`/MemberInfo/${this.userID}`)
       }
     },
     openLoginIn () {
-      this.memberMode = 'loginIn'
+      this.userMode = 'loginIn'
       this.modal.show()
     },
     search () {
@@ -259,7 +261,7 @@ header{
   .searchBar{
     color: #fff;
     flex-grow: 2;
-    flex-shrink: 1;
+    flex-shrink: 2;
     width: 100%;
     box-sizing:border-box;
     display: flex;
@@ -284,15 +286,18 @@ header{
       border-left: 0;
     }
   }
-  .member{
-    flex-shrink: 0;
+  .user{
+    flex-shrink: 1;
     color:#fff;
     margin-left:15px;
     font-size:18px;
     border:0;
     background:transparent;
     font-weight:bold;
-    max-width:200px;
+    width:250px;
+    &>div{
+      display:flex
+    }
     a{
       color:#fff;
     }

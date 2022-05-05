@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 // import axios from 'axios'
 // import $ from 'jquery'
 import memberModules from './member'
+import messageModules from './message'
 
 Vue.use(Vuex)
 
@@ -44,6 +45,7 @@ export default new Vuex.Store({
     // }
   },
   modules: {
-    memberModules
+    memberModules,
+    messageModules
   }
 })

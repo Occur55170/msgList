@@ -28,9 +28,9 @@ export default new Router({
       component: () => import('./views/ArticleCon.vue')
     },
     {
-      path: '/UserInfo/:id',
-      name: 'UserInfo',
-      component: () => import('./views/UserInfo.vue')
+      path: '/MemberInfo/:id',
+      name: 'MemberInfo',
+      component: () => import('./views/MemberInfo.vue')
     }
 
   ]

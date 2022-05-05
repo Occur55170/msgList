@@ -22,14 +22,14 @@
           <span>留言</span>
           <span><a href="">收藏</a></span>
         </div>
-        <a href="" @click.prevent="openArcitle(item.id)"></a>
+        <a href="" @click.prevent="openArticle(item.id)"></a>
       </article>
     </section>
   </div>
 </template>
 
 <script>
-// import $ from 'jquery'
+import $ from 'jquery'
 
 export default {
   name: 'articleList',
@@ -41,17 +41,30 @@ export default {
   },
   props: ['searchText'],
   methods: {
-    getArcitleList () {
+    getArticleList () {
       const vm = this
       vm.$store.dispatch('upadateisLoad', true)
-      let formData = JSON.stringify({ 'Aid': '' })
-      let api = `https://script.google.com/macros/s/AKfycbzB5-0GjOcnWU-s0f6eSk1-bIGBn23L8PJL-2dDNDJzoum6YHG2y-J06eq56B7bvvYR/exec`
-      vm.$http.post(api, formData).then(response => {
-        vm.articleList = response.data
-        vm.$store.dispatch('upadateisLoad', false)
+      let formData = { 'Aid': '' }
+      $.ajax({
+        type: 'get',
+        url: `${process.env.VUE_APP_ARTICLE}`,
+        data: formData,
+        success: function (response) {
+          response = JSON.parse(response)[0]
+          if (response.success) {
+            vm.articleList = response.data
+            vm.$store.dispatch('upadateisLoad', false)
+          } else {
+            console.log(response.message)
+            vm.$store.dispatch('upadateisLoad', false)
+          }
+        },
+        error: function (response) {
+          console.log(response)
+        }
       })
     },
-    openArcitle (Aid) {
+    openArticle (Aid) {
       this.$router.push(`/articleCon/${Aid}`)
     },
     updateSortName (item) {
@@ -90,7 +103,7 @@ export default {
     }
   },
   created () {
-    this.getArcitleList()
+    this.getArticleList()
     this.$store.dispatch('upadateisLoad', true)
   }
 }

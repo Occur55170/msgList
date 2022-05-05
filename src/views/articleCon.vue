@@ -13,6 +13,10 @@
         <p>{{ article.content }}</p>
       </div>
     </div>
+    <div class="articlefeatures">
+      <a href="">按讚</a>
+      <a href="">收藏</a>
+    </div>
     <div class="message">
       <p>共 {{ messageList.length }} 則留言</p>
       <ul>
@@ -27,11 +31,21 @@
               <p class="name">{{ item.mainMsg.author }}</p>
               <p class="content">{{ item.mainMsg.content }}</p>
               <p class="time"><span>B{{ key+1 }}</span>{{ item.mainMsg.time }}</p>
+              <div class="MSGfeatures">
+                <a href="" class="mx-2" @click.prevent="openReply(key)">回覆</a>
+                <a href="" class="mx-2" @click.prevent="addMSGlike(item.mainMsg.msgID, userID)">
+                  <i class="fa-solid fa-thumbs-up" v-if="item.mainMsg.good.indexOf(`${userID}`) !== -1"></i>
+                  <i class="fa-regular fa-thumbs-up" v-else></i>
+                </a>
+                {{ item.mainMsg.good.length }}
+              </div>
             </div>
-            <a href="" class="del" @click.prevent="delMessage(item.mainMsg.msgID)">刪除</a>
-            <div class="features">
-              <a href="" class="mx-2" @click.prevent="addReply(item.mainMsg.msgID)">回覆留言</a>
-              <a href="" class="mx-2" @click.prevent="addGood()">讚</a>
+            <a href="" class="del" @click.prevent="delMessage(item.mainMsg.msgID)" v-if="item.mainMsg.userID == userID">刪除</a>
+          </div>
+          <div class="NewReply" :class="`reply-${key}`">
+            <div>
+              <input type="text" placeholder="請輸入回覆留言內容" v-model.trim="NewReplyCon">
+              <button class="mx-2" @click.prevent="addReply(item.mainMsg.msgID)" :disabled="NewReplyCon == ''">回覆</button>
             </div>
           </div>
           <div class="reply mt-4" v-for="(reply,index) in item.reply" :key="index">
@@ -43,21 +57,21 @@
             <div>
               <p class="name">{{ reply.author }}</p>
               <p class="content">{{ reply.content }}</p>
-              <p class="time"><span>B{{ key+1 }}<em>-1</em></span>{{ reply.time }}</p>
+              <p class="time"><span>B{{ key+1 }}<em>-{{ index+1 }}</em></span>{{ reply.time }}</p>
+              <div class="MSGfeatures">
+                <a href="" class="mx-2" @click.prevent="addMSGlike(reply.msgID, userID)">
+                  <i class="fa-solid fa-thumbs-up" v-if="reply.good.indexOf(`${userID}`) !== -1"></i>
+                  <i class="fa-regular fa-thumbs-up" v-else></i>
+                </a>
+                {{ reply.good.length }}
+              </div>
             </div>
-            <a href="" class="del" @click.prevent="delMessage(reply.msgID)">刪除</a>
-            <div class="features">
-              <!-- <a href="" class="mx-2" @click.prevent="addReply">回覆留言</a> -->
-              <a href="" class="mx-2" @click.prevent="addGood">讚</a>
-            </div>
+            <a href="" class="del" @click.prevent="delMessage(reply.msgID)" v-if="reply.userID == userID">刪除</a>
           </div>
         </li>
       </ul>
       <div class="newMessage">
-        <div class="closeMessage" v-if="switchMSG">
-          <a href="" @click.prevent="openLoginIn">請先登入在留言</a>
-        </div>
-        <textarea name="" id="" cols="30" rows="10" v-model.trim="newMessage.content"></textarea>
+        <input type="text" v-model.trim="newMessage.content" placeholder="新增留言" @click="logStatus()">
         <button class="btn btn-danger" type="submit" @click="addMessage" :disabled="submit">送出</button>
       </div>
     </div>
@@ -80,19 +94,82 @@ export default {
         time: '',
         good: ''
       },
-      testUrl: 'https://script.google.com/macros/s/AKfycbxuQ74bSb1_d-sjhbBpgv7d3n0zHJKwN3vzg8hHfecfr44WFzF85_xP328GGJrqAg6j/exec'
+      NewReplyCon: ''
     }
   },
   props: ['userID', 'user'],
   methods: {
-    getArcitleCon () {
+    getArticleCon () {
       const vm = this
       this.$store.dispatch('upadateisLoad', true)
-      let formData = JSON.stringify({ 'Aid': vm.Aid })
-      let api = `https://script.google.com/macros/s/AKfycbzB5-0GjOcnWU-s0f6eSk1-bIGBn23L8PJL-2dDNDJzoum6YHG2y-J06eq56B7bvvYR/exec`
-      vm.$http.post(api, formData).then(response => {
-        vm.article = response.data.data
-        vm.$store.dispatch('upadateisLoad', false)
+      let formData = { 'Aid': vm.Aid }
+      $.ajax({
+        type: 'get',
+        url: `${process.env.VUE_APP_ARTICLE}`,
+        data: formData,
+        success: function (response) {
+          response = JSON.parse(response)
+          if (response.success) {
+            vm.article = response.data
+            vm.$store.dispatch('upadateisLoad', false)
+          } else {
+            console.log(response.message)
+            vm.$store.dispatch('upadateisLoad', false)
+          }
+        },
+        error: function (response) {
+          console.log(response)
+        }
+      })
+    },
+    articleCollect () {
+      const vm = this
+      this.$store.dispatch('upadateisLoad', true)
+      let data = {
+        'Aid': vm.Aid,
+        'mode': 'collectArticle'
+      }
+      $.ajax({
+        type: 'post',
+        url: `${process.env.VUE_APP_ARTICLE}`,
+        data: data,
+        success: function (response) {
+          console.log(response)
+          // response = JSON.parse(response)
+          // console.log('getArticleCon', response)
+          // if (response.success) {
+          //   vm.article = response.data
+          //   vm.$store.dispatch('upadateisLoad', false)
+          // } else {
+          //   console.log(response.message)
+          //   vm.$store.dispatch('upadateisLoad', false)
+          // }
+        },
+        error: function (response) {
+          console.log(response)
+        }
+      })
+    },
+    articleGood () {
+      const vm = this
+      this.$store.dispatch('upadateisLoad', true)
+      let data = { 'Aid': vm.Aid }
+      $.ajax({
+        type: 'post',
+        url: `${process.env.VUE_APP_ARTICLE}`,
+        data: data,
+        success: function (response) {
+          response = JSON.parse(response)
+          if (response.success) {
+            vm.article = response.data
+            vm.$store.dispatch('upadateisLoad', false)
+          } else {
+            vm.$store.dispatch('upadateisLoad', false)
+          }
+        },
+        error: function (response) {
+          console.log(response)
+        }
       })
     },
     goback () {
@@ -104,8 +181,7 @@ export default {
       let mid = { 'mid': vm.Aid }
       $.ajax({
         type: 'get',
-        // url: `${process.env.VUE_APP_MESSAGE}`,
-        url: vm.testUrl,
+        url: `${process.env.VUE_APP_MESSAGE}`,
         data: mid,
         dataType: 'JSON',
         success: function (response) {
@@ -132,9 +208,6 @@ export default {
         }
       })
     },
-    openLoginIn () {
-      this.$emit('openLoginIn')
-    },
     addMessage () {
       const vm = this
       vm.$store.dispatch('upadateisLoad', true)
@@ -155,22 +228,20 @@ export default {
         'male': vm.user.male,
         'content': vm.newMessage.content,
         'time': time,
-        'good': 0,
         'msgID': msgID
       }
       $.ajax({
         type: 'post',
-        // url: `${process.env.VUE_APP_MESSAGE}`,
-        url: vm.testUrl,
+        url: `${process.env.VUE_APP_MESSAGE}`,
         data: data,
         success: function (response) {
           response = JSON.parse(response)[0]
-          console.log('add', response)
           if (response.success) {
+            vm.$bus.$emit('message:push', response.message, 'success')
             vm.getMessage()
-            // vm.$store.dispatch('upadateisLoad', false)
           } else {
             console.log(response)
+            vm.$bus.$emit('message:push', response.message, 'danger')
             vm.$store.dispatch('upadateisLoad', false)
           }
         },
@@ -189,19 +260,20 @@ export default {
         'mid': vm.Aid,
         'msgID': msgID
       }
+      console.log(data)
       $.ajax({
         type: 'post',
-        // url: `${process.env.VUE_APP_MESSAGE}`,
-        url: vm.testUrl,
+        url: `${process.env.VUE_APP_MESSAGE}`,
         data: data,
         success: function (response) {
           response = JSON.parse(response)[0]
           console.log('del', response)
           if (response.success) {
+            vm.$bus.$emit('message:push', response.message, 'success')
             vm.getMessage()
-            // vm.$store.dispatch('upadateisLoad', false)
           } else {
             console.log(response)
+            vm.$bus.$emit('message:push', response.message, 'danger')
             vm.$store.dispatch('upadateisLoad', false)
           }
         },
@@ -210,29 +282,15 @@ export default {
         }
       })
     },
-    addGood (msgID) {
-      const vm = this
-      this.$store.dispatch('upadateisLoad', true)
-      let data = {
-        'mode': 'addGood',
-        'msgID': msgID
+    openReply (key) {
+      if (this.userID !== '') {
+        $(`.reply-${key}`).toggle()
+      } else {
+        alert('請先登入會員')
+        this.openLoginIn()
       }
-      $.ajax({
-        type: 'get',
-        // url: `${process.env.VUE_APP_MESSAGE}`,
-        url: vm.testUrl,
-        data: data,
-        dataType: 'JSON',
-        success: function (response) {
-          console.log(response)
-          vm.$store.dispatch('upadateisLoad', false)
-        },
-        error: function (response) {
-          console.log(response)
-        }
-      })
     },
-    addReply (msgID) {
+    addReply (mainMsgID) {
       const vm = this
       vm.$store.dispatch('upadateisLoad', true)
       const timestamp = new Date()
@@ -243,33 +301,31 @@ export default {
       let min = timestamp.getMinutes()
       let sec = timestamp.getSeconds()
       let time = `${yyyy} / ${mm} / ${day}  ${hour}:${min}:${sec}`
+      let msgID = `${vm.Aid}-${new Date().getTime()}`
       var data = {
         'mode': 'addReply',
         'mid': vm.Aid,
         'author': vm.user.name,
         'userID': vm.userID,
         'male': vm.user.male,
-        // 跟新增留言相同，考慮修改
-        'content': vm.newMessage.content,
-        // 跟新增留言相同，考慮修改
+        'content': vm.NewReplyCon,
         'time': time,
         'good': 0,
+        'mainMsgID': mainMsgID,
         'msgID': msgID
       }
-      console.log(data)
       $.ajax({
         type: 'post',
-        url: vm.testUrl,
+        url: `${process.env.VUE_APP_MESSAGE}`,
         data: data,
         success: function (response) {
-          console.log(response)
           response = JSON.parse(response)[0]
-          console.log('add', response)
           if (response.success) {
-            vm.getMessage()
+            console.log(response)
+            vm.$bus.$emit('message:push', response.message, 'success')
           } else {
             console.log(response)
-            vm.$store.dispatch('upadateisLoad', false)
+            vm.$bus.$emit('message:push', response.message, 'danger')
           }
         },
         error: function (response) {
@@ -277,7 +333,55 @@ export default {
           alert('系統出錯，請稍後在試一次或者聯絡客服人員')
           vm.$store.dispatch('upadateisLoad', false)
         }
+      }).then(() => {
+        vm.getMessage()
+        vm.NewReplyCon = ''
+        $('.NewReply').hide()
       })
+    },
+    addMSGlike (msgID, userID) {
+      const vm = this
+      if (userID !== '') {
+        this.$store.dispatch('upadateisLoad', true)
+        let data = {
+          'mode': 'addMSGlike',
+          'mid': vm.Aid,
+          'msgID': msgID,
+          'userID': userID
+        }
+        $.ajax({
+          type: 'post',
+          url: `${process.env.VUE_APP_MESSAGE}`,
+          data: data,
+          dataType: 'JSON',
+          success: function (response) {
+            response = response[0]
+            if (response.success) {
+              console.log(response.message)
+            } else {
+              console.log(response.message)
+            }
+            vm.$store.dispatch('upadateisLoad', false)
+          },
+          error: function (response) {
+            console.log(response)
+          }
+        }).then(() => {
+          vm.getMessage()
+        })
+      } else {
+        alert('請先登入會員')
+        this.openLoginIn()
+      }
+    },
+    openLoginIn () {
+      this.$emit('openLoginIn')
+    },
+    logStatus () {
+      if (this.userID === '') {
+        alert('請先登入會員')
+        this.openLoginIn()
+      }
     }
   },
   computed: {
@@ -287,20 +391,11 @@ export default {
         return false
       }
       return true
-    },
-    switchMSG () {
-      const userID = this.userID
-      if (userID !== '') {
-        return false
-      } else {
-        return true
-      }
     }
   },
   created () {
     this.Aid = this.$route.params.id
-    console.log(this.user)
-    this.getArcitleCon()
+    this.getArticleCon()
     this.getMessage()
   }
 }
@@ -321,6 +416,20 @@ export default {
     }
     .content{
       line-height:2;
+    }
+  }
+  .articlefeatures{
+    background:#fff;
+    display:flex;
+    padding:0 50px 50px 50px;
+    box-sizing:border-box;
+    a{
+      width:100%;
+      background:rgba(158, 158, 158, .5);
+      box-sizing:border-box;
+      padding:10px;
+      margin:0 20px;
+      text-decoration:none;
     }
   }
   .message{
@@ -374,7 +483,7 @@ export default {
         position:relative;
       }
       .reply{
-        padding:10px 0;
+        padding:20px 0;
         margin-left:60px;
         em{
           font-style:normal;
@@ -396,6 +505,7 @@ export default {
       }
       .time{
         font-size:14px;
+        margin-bottom:5px;
         margin-top:10px;
         span{
           &::after{
@@ -405,39 +515,52 @@ export default {
       }
       .del{
         position:absolute;
-        top:0;
+        top:40%;
         right:0;
       }
-      .features{
+      .MSGfeatures{
         width:100%;
+        i{
+          color:#006aa6;
+        }
+      }
+    }
+    .NewReply{
+      display:none;
+      &>div{
+        display:flex;
+        justify-content:space-between;
+      }
+      input{
+        width:100%;
+        flex-grow:2;
+        flex-shrink:2;
+      }
+      button{
+        flex-shrink:0;
+        width:auto;
+        border:0;
+        box-sizing:border-box;
+        padding:5px 12px;
+        background:#006aa6;
+        color:#fff;
+        border-radius:5px;
+        &:disabled{
+          background:#054a72;
+          color:#999;
+        }
       }
     }
     .newMessage{
       width:100%;
       position:relative;
-      textarea{
-        width:100%;
+      input{
+        width:90%;
+        margin-right:2%;
       }
       button{
+        width:8%;
         margin:0 0 0 auto;
-      }
-      .closeMessage{
-        background:rgba(0, 0, 0, .5);
-        box-sizing:border-box;
-        box-shadow:0 0 4px 4px rgba(0, 0, 0, .2);
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        position:absolute;
-        top:0;
-        left:0;
-        width:100%;
-        height:100%;
-        opacity: 0.5;
-        a{
-          font-size: 30px;
-          color:blue;
-        }
       }
     }
   }
