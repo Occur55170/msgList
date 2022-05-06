@@ -15,7 +15,7 @@
             <p class="mx-2 d-block mb-0"><a href="#" @click.prevent="goUserInfo"><i class="fas fa-user"></i><span class="mx-1">{{ user.name }}</span></a>你好</p>
             <a href="#" class="logOut" @click.prevent="logOut">登出</a>
           </div>
-          <button type="button" class="user" data-bs-toggle="modal" data-bs-target="#exampleModal" v-else>註冊/登入</button>
+          <button type="button" class="user" @click="openLoginIn" v-else>註冊/登入</button>
         </div>
       </div>
     </header>
@@ -57,7 +57,8 @@
             </div>
             <div v-if="userMode=='signUp'">
               <validation-observer class="mb-3" v-slot="{ invalid }">
-                <form >
+                <form ref="form">
+                  <button type="reset">Reset</button>
                 <!-- <form @submit.prevent="userData"> -->
                   <validation-provider rules="required" v-slot="{ errors,classes }" class="mb-3 d-block">
                     <label for="username">名稱</label>
@@ -90,7 +91,6 @@
                   </validation-provider>
                   <div class="text-center my-2">
                     <button class="btn btn-danger" type="submit" :disabled="invalid" @click.prevent="signUp">註冊</button>
-
                   </div>
                 </form>
               </validation-observer>
@@ -144,9 +144,11 @@ export default {
       let formData = JSON.stringify(vm.user)
       vm.axios.post(api, formData).then(function (response) {
         if (response.data[0].message === '註冊成功') {
-          console.log(response.data[0].message)
+          console.log(response.data[0])
           vm.$bus.$emit('message:push', response.data[0].message, 'success')
           vm.modal.hide()
+          vm.user = {}
+          vm.userMode = 'loginIn'
         } else {
           console.log(response.data[0].message)
         }
@@ -166,7 +168,6 @@ export default {
       vm.axios.post(api, formData).then(function (response) {
         if (response.data[0].success) {
           vm.$bus.$emit('message:push', response.data[0].message, 'success')
-          // 恢復預設值
           vm.logAc = ''
           vm.logPwd = ''
           vm.userID = response.data[0].userID
@@ -214,22 +215,20 @@ export default {
       this.userMode = 'loginIn'
       this.modal.show()
     },
+    // ??
     search () {
       const vm = this
       console.log(vm.searchText)
     }
   },
   computed: {
-    // isLoading
     ...mapGetters(['isLoading'])
   },
   components: {
     AlertMSG
   },
   mounted () {
-    // this.$store.dispatch('upadateisLoad', true)
     this.modal = new Modal(this.$refs.exampleModal)
-    // this.getlogStatus()
   }
 }
 </script>

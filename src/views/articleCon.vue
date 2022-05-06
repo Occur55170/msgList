@@ -15,7 +15,7 @@
     </div>
     <div class="articlefeatures">
       <a href="">按讚</a>
-      <a href="">收藏</a>
+      <a href="" @click.prevent="articleCollect">收藏</a>
     </div>
     <div class="message">
       <p>共 {{ messageList.length }} 則留言</p>
@@ -94,7 +94,8 @@ export default {
         time: '',
         good: ''
       },
-      NewReplyCon: ''
+      NewReplyCon: '',
+      testUrl: 'https://script.google.com/macros/s/AKfycbyCCxVR_8nGi-gHdJvCjLOcdpGOUeMMsLmLLyUak1IWnLCKVquWQSrq1CCejU1Dae9r/exec'
     }
   },
   props: ['userID', 'user'],
@@ -124,29 +125,36 @@ export default {
     },
     articleCollect () {
       const vm = this
-      this.$store.dispatch('upadateisLoad', true)
+      // this.$store.dispatch('upadateisLoad', true)
       let data = {
+        'mode': 'collectArticle',
         'Aid': vm.Aid,
-        'mode': 'collectArticle'
+        'title': vm.article.title,
+        'userID': vm.userID
       }
+      console.log(data)
       $.ajax({
-        type: 'post',
-        url: `${process.env.VUE_APP_ARTICLE}`,
+        type: 'get',
+        // url: `${process.env.VUE_APP_USER}`,
+        url: vm.testUrl,
         data: data,
         success: function (response) {
-          console.log(response)
-          // response = JSON.parse(response)
-          // console.log('getArticleCon', response)
-          // if (response.success) {
-          //   vm.article = response.data
-          //   vm.$store.dispatch('upadateisLoad', false)
-          // } else {
-          //   console.log(response.message)
-          //   vm.$store.dispatch('upadateisLoad', false)
-          // }
+          response = JSON.parse(response)
+          if (response.success) {
+            if (response.mode === 'receive') {
+              vm.$bus.$emit('message:push', '收藏成功', 'success')
+            } else if (response.mode === 'put') {
+              vm.$bus.$emit('message:push', '取消收藏成功', 'success')
+            }
+          } else {
+            vm.$bus.$emit('message:push', response.message, 'danger')
+            console.log(response.message)
+          }
+          vm.$store.dispatch('upadateisLoad', false)
         },
         error: function (response) {
           console.log(response)
+          vm.$store.dispatch('upadateisLoad', false)
         }
       })
     },
