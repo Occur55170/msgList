@@ -1,11 +1,42 @@
 <template>
   <div class="memberInfo">
-    <h1>memberInfo</h1>
-    <p>使用者姓名:{{ member.name }}</p>
-    <p>使用者帳號:{{ member.account }}</p>
-    <p>使用者密碼:{{ member.password }}</p>
-    <p>使用者信箱:{{ member.email }}</p>
-    <p>註冊日期:{{ member.signDate }}</p>
+    <h1>會員資料</h1>
+    <div class="mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
+      <h5 class="fw-bold mb-2 w-100">使用者姓名:</h5>
+      <div>
+        <span>{{ member.name }}</span>
+        <input type="text" name="" id="">
+      </div>
+      <button>修改</button>
+    </div>
+    <div class="mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
+      <h5 class="fw-bold mb-2 w-100">使用者帳號:</h5>
+      <div>
+        <span>{{ member.account }}</span>
+        <input type="text" name="" id="">
+      </div>
+      <button>修改</button>
+    </div>
+    <div class="mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
+      <h5 class="fw-bold mb-2 w-100">使用者密碼:</h5>
+      <div>
+        <span>{{ member.password }}</span>
+      <input type="text" name="" id="">
+      </div>
+      <button>修改</button>
+    </div>
+    <div class="mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
+      <h5 class="fw-bold mb-2 w-100">使用者信箱:</h5>
+      <div>
+        <span>{{ member.email }}</span>
+      <input type="text" name="" id="">
+      </div>
+      <button>修改</button>
+    </div>
+    <div class="mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
+      <h5 class="fw-bold mb-2 w-100">註冊日期:</h5>
+      <span>{{ member.signDate }}</span>
+    </div>
     <div>
       收藏文章:
       <ul>
@@ -14,9 +45,7 @@
         </li>
       </ul>
     </div>
-    <p>說讚的文章:{{ member.likeList }}</p>
-    <div class="textContent">
-    </div>
+    <!-- <p>說讚的文章:{{ member.likeList }}</p> -->
   </div>
 </template>
 
@@ -41,9 +70,7 @@ export default {
         'userID': userID,
         'type': 'getMember'
       })
-      console.log(data)
       vm.$http.post(api, data).then(response => {
-        console.log(response)
         if (response.data.success) {
           if (response.data.userStatus && vm.userID !== '') {
             vm.member = {
@@ -79,12 +106,19 @@ export default {
 
 <style lang="scss" scoped>
 .memberInfo{
+  max-width:768px;
+  margin:0 auto;
   background:#fff;
   border-radius:10px;
   box-sizing:border-box;
-  padding:20px;
+  padding:20px 60px;
   h1{
+    margin-bottom:20px;
     text-align:center;
+    font-weight:bold;
+  }
+  p{
+    margin-bottom:10px;
   }
   .textContent{
     text-align:left;

@@ -14,8 +14,16 @@
       </div>
     </div>
     <div class="articlefeatures">
-      <a href="">按讚</a>
-      <a href="" @click.prevent="articleCollect">收藏</a>
+      <div>
+        <span>
+          <a href="" @click.prevent="articleLike" class="good" v-if="article.likeList.indexOf(userID) !== -1 && userID !== ''"><i class="fa-solid fa-thumbs-up"></i>收回讚</a>
+          <a href="" @click.prevent="articleLike" class="good" v-else><i class="fa-regular fa-thumbs-up"></i>讚</a>
+        </span>
+        <span>
+          <a href="" @click.prevent="articleCollect" class="collect" v-if="article.collect.indexOf(JSON.stringify(userID)) !== -1 && userID !== ''"><i class="fa-solid fa-star"></i>取消收藏</a>
+          <a href="" @click.prevent="articleCollect" class="collect" v-else><i class="fa-regular fa-star"></i>收藏</a>
+        </span>
+      </div>
     </div>
     <div class="message">
       <p>共 {{ messageList.length }} 則留言</p>
@@ -80,22 +88,23 @@
 
 <script>
 import $ from 'jquery'
-// import axios from 'axios'
 
 export default {
   name: 'articleCon',
   data () {
     return {
       Aid: '',
-      article: {},
+      article: {
+        collect: [],
+        likeList: []
+      },
       messageList: [],
       newMessage: {
         content: '',
         time: '',
         good: ''
       },
-      NewReplyCon: '',
-      testUrl: 'https://script.google.com/macros/s/AKfycbyCCxVR_8nGi-gHdJvCjLOcdpGOUeMMsLmLLyUak1IWnLCKVquWQSrq1CCejU1Dae9r/exec'
+      NewReplyCon: ''
     }
   },
   props: ['userID', 'user'],
@@ -112,6 +121,8 @@ export default {
           response = JSON.parse(response)
           if (response.success) {
             vm.article = response.data
+            vm.article.collect = JSON.parse(vm.article.collect)
+            vm.article.likeList = JSON.parse(vm.article.likeList)
             vm.$store.dispatch('upadateisLoad', false)
           } else {
             console.log(response.message)
@@ -125,60 +136,69 @@ export default {
     },
     articleCollect () {
       const vm = this
-      // this.$store.dispatch('upadateisLoad', true)
-      let data = {
-        'mode': 'collectArticle',
-        'Aid': vm.Aid,
-        'title': vm.article.title,
-        'userID': vm.userID
-      }
-      console.log(data)
-      $.ajax({
-        type: 'get',
-        // url: `${process.env.VUE_APP_USER}`,
-        url: vm.testUrl,
-        data: data,
-        success: function (response) {
-          response = JSON.parse(response)
-          if (response.success) {
-            if (response.mode === 'receive') {
-              vm.$bus.$emit('message:push', '收藏成功', 'success')
-            } else if (response.mode === 'put') {
-              vm.$bus.$emit('message:push', '取消收藏成功', 'success')
-            }
-          } else {
-            vm.$bus.$emit('message:push', response.message, 'danger')
-            console.log(response.message)
-          }
-          vm.$store.dispatch('upadateisLoad', false)
-        },
-        error: function (response) {
-          console.log(response)
-          vm.$store.dispatch('upadateisLoad', false)
+      this.$store.dispatch('upadateisLoad', true)
+      if (this.userID === '') {
+        alert('請先登入會員')
+        this.$emit('openLoginIn')
+      } else {
+        let data = {
+          'Aid': vm.Aid,
+          'title': vm.article.title,
+          'userID': vm.userID
         }
-      })
+        $.ajax({
+          type: 'get',
+          url: `${process.env.VUE_APP_USER}`,
+          data: data,
+          success: function (response) {
+            console.log(response)
+            response = JSON.parse(response)
+            if (response.success) {
+              if (response.mode === 'receive') {
+                vm.$bus.$emit('message:push', '收藏成功', 'success')
+              } else if (response.mode === 'put') {
+                vm.$bus.$emit('message:push', '取消收藏成功', 'success')
+              }
+              vm.getArticleCon()
+            } else {
+              vm.$bus.$emit('message:push', response.message, 'danger')
+              console.log(response.message)
+              vm.$store.dispatch('upadateisLoad', false)
+            }
+          },
+          error: function (response) {
+            console.log(response)
+            vm.$store.dispatch('upadateisLoad', false)
+          }
+        })
+      }
     },
-    articleGood () {
+    articleLike () {
       const vm = this
       this.$store.dispatch('upadateisLoad', true)
-      let data = { 'Aid': vm.Aid }
-      $.ajax({
-        type: 'post',
-        url: `${process.env.VUE_APP_ARTICLE}`,
-        data: data,
-        success: function (response) {
-          response = JSON.parse(response)
-          if (response.success) {
-            vm.article = response.data
-            vm.$store.dispatch('upadateisLoad', false)
-          } else {
-            vm.$store.dispatch('upadateisLoad', false)
-          }
-        },
-        error: function (response) {
+      if (this.userID === '') {
+        alert('請先登入會員')
+        this.$emit('openLoginIn')
+      } else {
+        let data = JSON.stringify({
+          'Aid': vm.Aid,
+          'title': vm.article.title,
+          'userID': vm.userID
+        })
+        console.log(data)
+        let api = `${process.env.VUE_APP_ARTICLE}`
+        vm.$http.post(api, data).then(response => {
           console.log(response)
-        }
-      })
+          if (response.data.success && response.data.mode === 'press') {
+            // vm.$bus.$emit('message:push', '按讚', 'success')
+          } else if (response.data.success && response.data.mode === 'takeback') {
+            // vm.$bus.$emit('message:push', '收回讚', 'success')
+          } else {
+            vm.$bus.$emit('message:push', response.message, 'danger')
+          }
+          vm.getArticleCon()
+        })
+      }
     },
     goback () {
       this.$router.push('/')
@@ -295,7 +315,7 @@ export default {
         $(`.reply-${key}`).toggle()
       } else {
         alert('請先登入會員')
-        this.openLoginIn()
+        this.$emit('openLoginIn')
       }
     },
     addReply (mainMsgID) {
@@ -379,16 +399,13 @@ export default {
         })
       } else {
         alert('請先登入會員')
-        this.openLoginIn()
+        this.$emit('openLoginIn')
       }
-    },
-    openLoginIn () {
-      this.$emit('openLoginIn')
     },
     logStatus () {
       if (this.userID === '') {
         alert('請先登入會員')
-        this.openLoginIn()
+        this.$emit('openLoginIn')
       }
     }
   },
@@ -428,16 +445,26 @@ export default {
   }
   .articlefeatures{
     background:#fff;
-    display:flex;
-    padding:0 50px 50px 50px;
+    padding:0 30px 40px 30px;
     box-sizing:border-box;
+    div{
+      padding:15px 10px;
+      display:flex;
+      justify-content:space-around;
+      border-top:1px solid #ced0d4;
+      border-bottom:1px solid #ced0d4;
+    }
     a{
-      width:100%;
-      background:rgba(158, 158, 158, .5);
       box-sizing:border-box;
-      padding:10px;
+      font-size:20px;
       margin:0 20px;
       text-decoration:none;
+      color:#606770;
+      // &.collect{
+      //   font-size:26px;
+      //   background:#999;
+      //   color:#fff;
+      // }
     }
   }
   .message{

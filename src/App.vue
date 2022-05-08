@@ -7,8 +7,8 @@
           <router-link to="/">Occur</router-link>
         </div>
         <div class="searchBar">
-          <input type="text" name="searchText" id="searchText" v-model.trim="searchText" @keyup.enter="search">
-          <button @click="search">搜尋</button>
+          <input type="text" name="searchText" id="searchText" v-model.trim="searchText">
+          <!-- <button @click="search">搜尋</button> -->
         </div>
         <div class="user">
           <div v-if="userID">
@@ -166,17 +166,20 @@ export default {
         'password': vm.logPwd
       })
       vm.axios.post(api, formData).then(function (response) {
-        if (response.data[0].success) {
-          vm.$bus.$emit('message:push', response.data[0].message, 'success')
+        response.data = response.data[0]
+        if (response.data.success) {
+          vm.$bus.$emit('message:push', response.data.message, 'success')
           vm.logAc = ''
           vm.logPwd = ''
-          vm.userID = response.data[0].userID
-          vm.user.name = response.data[0].name
-          vm.user.male = response.data[0].male
+          vm.userID = response.data.userID
+          vm.user.name = response.data.name
+          vm.user.male = response.data.male
+          vm.user.collect = JSON.parse(response.data.collect)
+          vm.user.likeList = JSON.parse(response.data.likeList)
           vm.modal.hide()
         } else {
-          console.log(response.data[0].success)
-          vm.$bus.$emit('message:push', response.data[0].message, 'danger')
+          // console.log(response.data.success)
+          vm.$bus.$emit('message:push', response.data.message, 'danger')
           vm.modal.hide()
         }
         vm.$store.dispatch('upadateisLoad', false)
@@ -192,16 +195,20 @@ export default {
         'userID': vm.userID
       })
       vm.axios.post(api, formData).then(function (response) {
-        console.log(response.data[0])
-        if (response.data[0].success) {
+        response.data = response.data[0]
+        console.log(response.data)
+        if (response.data.success) {
           // 恢復預設值
           vm.userID = ''
           vm.logAc = ''
           vm.logPwd = ''
-          vm.$bus.$emit('message:push', response.data[0].message, 'success')
+          vm.user = {}
+          vm.$bus.$emit('message:push', response.data.message, 'success')
         }
         // 登出後 看要回此頁，但是不可在使用者頁面
-        vm.$router.push('/')
+        if (vm.$route.name === 'MemberInfo') {
+          vm.$router.push('/')
+        }
         // 登出後 看要回此頁，但是不可在使用者頁面
         vm.$store.dispatch('upadateisLoad', false)
       })
@@ -214,11 +221,7 @@ export default {
     openLoginIn () {
       this.userMode = 'loginIn'
       this.modal.show()
-    },
-    // ??
-    search () {
-      const vm = this
-      console.log(vm.searchText)
+      this.$store.dispatch('upadateisLoad', false)
     }
   },
   computed: {
