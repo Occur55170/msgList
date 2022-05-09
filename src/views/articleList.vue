@@ -2,7 +2,9 @@
   <div class="articleList">
     <aside>
       <ul>
-        <li><a href="#" v-for="(item,key) in category" :key="key" @click="updateSortName(item)" :class="{'activeSort': sortName == item}">{{ key+1 }}.{{ item }}</a></li>
+        <li v-for="(item,key) in category" :key="key" @click="updateSortName(item)" :class="{'activeSort': sortName == item}">
+          <a href="#"><span>{{ key+1 }}</span>{{ item }}</a>
+        </li>
       </ul>
     </aside>
     <section>
@@ -17,11 +19,6 @@
           <span>{{item.time}}</span>
         </p>
         <p class="Pdesc">{{item.description}}</p>
-        <div class="Info">
-          <span>讚</span>
-          <span>留言</span>
-          <span><a href="">收藏</a></span>
-        </div>
         <a href="" @click.prevent="openArticle(item.id)"></a>
       </article>
     </section>
@@ -121,6 +118,9 @@ export default {
       padding-left:0;
       margin: 20px 0;
       list-style-type:none;
+      span::after{
+        content:'.'
+      }
     }
     a{
       padding: 10px 20px;
@@ -133,11 +133,9 @@ export default {
         background-color: rgba(0, 0, 0, 0.35);
         color: #fff;
       }
-      &.activeSort{
-        background-color: rgba(255, 255, 255, 0.3);
-        color: #fff;
-        font-weight:bold;
-      }
+    }
+    .activeSort>a{
+      background-color: rgba(255, 255, 255, 0.3);
     }
   }
   section{
@@ -186,6 +184,59 @@ export default {
         span{
           margin-right:10px;
         }
+      }
+    }
+  }
+}
+@media(max-width:768px){
+  .articleList{
+    aside{
+      width:15%;
+      padding-right: 10px;
+      ul{
+        margin-top:0;
+      }
+      a{
+        padding:10px 0 10px 20px;
+      }
+    }
+    section{
+      width:85%;
+    }
+  }
+}
+@media(max-width:600px){
+  .articleList{
+    flex-wrap:wrap;
+    aside{
+      width:100%;
+      padding-right: 0;
+      ul{
+        width:100%;
+        margin-top:0;
+        display:flex;
+        li{
+          width:100%;
+          text-align:center;
+        }
+        span{
+          display:none;
+        }
+      }
+      a{
+        padding:3px 10px;
+      }
+      .activeSort{
+        background-color: rgba(255, 255, 255, 0.3);
+        color: #fff;
+        font-weight:bold;
+      }
+    }
+    section{
+      width:100%;
+      padding:20px 30px;
+      article{
+        padding: 20px 0;
       }
     }
   }

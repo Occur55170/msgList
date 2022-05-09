@@ -1,25 +1,29 @@
 <template>
   <div>
     <loading :active.sync="isLoading"/>
-    <header>
+    <header class="indexContainer">
       <div>
         <div class="logo">
-          <router-link to="/">Occur</router-link>
+          <router-link to="/">
+            <img src="@/assets/logo.png" alt="">
+          </router-link>
         </div>
         <div class="searchBar">
-          <input type="text" name="searchText" id="searchText" v-model.trim="searchText">
-          <!-- <button @click="search">搜尋</button> -->
+          <div>
+            <input type="text" name="searchText" id="searchText" v-model.trim="searchText">
+          </div>
+          <a href="" @click.prevent="openSearch"><i class="fa-solid fa-magnifying-glass"></i></a>
         </div>
         <div class="user">
           <div v-if="userID">
             <p class="mx-2 d-block mb-0"><a href="#" @click.prevent="goUserInfo"><i class="fas fa-user"></i><span class="mx-1">{{ user.name }}</span></a>你好</p>
             <a href="#" class="logOut" @click.prevent="logOut">登出</a>
           </div>
-          <button type="button" class="user" @click="openLoginIn" v-else>註冊/登入</button>
+          <button type="button" @click="openLoginIn" v-else>註冊/登入</button>
         </div>
       </div>
     </header>
-    <main>
+    <main class="indexContainer">
       <router-view class="section" :searchText="searchText" :userID="userID" :user="user" @openLoginIn="openLoginIn"></router-view>
     </main>
     <footer>
@@ -27,7 +31,7 @@
     </footer>
 
     <!-- Modal -->
-    <div class="modal fade" id="exampleModal" ref="exampleModal">
+    <div class="modal fade" id="userModal" ref="userModal">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -59,7 +63,6 @@
               <validation-observer class="mb-3" v-slot="{ invalid }">
                 <form ref="form">
                   <button type="reset">Reset</button>
-                <!-- <form @submit.prevent="userData"> -->
                   <validation-provider rules="required" v-slot="{ errors,classes }" class="mb-3 d-block">
                     <label for="username">名稱</label>
                     <input type="text" class="form-control" :class="classes" name="名稱" id="username" v-model.trim="user.name" placeholder="輸入名稱">
@@ -108,7 +111,7 @@
 </template>
 
 <script>
-// import $ from 'jquery'
+import $ from 'jquery'
 import { Modal } from 'bootstrap'
 import { mapGetters } from 'vuex'
 import AlertMSG from './components/AlertMSG'
@@ -222,6 +225,10 @@ export default {
       this.userMode = 'loginIn'
       this.modal.show()
       this.$store.dispatch('upadateisLoad', false)
+    },
+    openSearch () {
+      // $('.searchBar>div').slideToggle()
+      $('.searchBar>div').toggle()
     }
   },
   computed: {
@@ -231,7 +238,7 @@ export default {
     AlertMSG
   },
   mounted () {
-    this.modal = new Modal(this.$refs.exampleModal)
+    this.modal = new Modal(this.$refs.userModal)
   }
 }
 </script>
@@ -240,24 +247,19 @@ export default {
 @import '@/assets/scss/all.scss';
 header{
   background:#006aa6;
-  padding: 20px calc((100% - 1000px)/2);
+  padding:20px 0;
   &>div{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 1000px;
     margin: 0 auto;
   }
   .logo{
     flex-basis:200px;
     flex-grow:0;
     flex-shrink:0;
-    text-align: left;
-    a{
-      text-decoration:none;
-      color: #fff;
-      font-size:48px;
-      font-weight: bold;
+    img{
+      display:block;
     }
   }
   .searchBar{
@@ -267,41 +269,44 @@ header{
     width: 100%;
     box-sizing:border-box;
     display: flex;
+    &>div{
+      width:100%;
+    }
     input{
       width: 100%;
       border: 0;
       box-sizing: border-box;
       padding:5px 10px;
-      border-top-left-radius:5px;
-      border-bottom-left-radius:5px;
+      border-radius:5px;
       border:1px solid rgb(38, 38, 38);
       border-right: 0;
     }
-    button{
-      background:#00588a;
-      color: #fff;
-      border: 0;
-      width: 10%;
-      border-top-right-radius:5px;
-      border-bottom-right-radius:5px;
-      border:1px solid rgb(38, 38, 38);
-      border-left: 0;
+    a{
+      display:none;
     }
   }
   .user{
     flex-shrink: 1;
-    color:#fff;
     margin-left:15px;
-    font-size:18px;
-    border:0;
-    background:transparent;
-    font-weight:bold;
-    width:250px;
-    &>div{
-      display:flex
-    }
-    a{
+    button{
+      width:100px;
       color:#fff;
+      background:transparent;
+      border:0;
+      font-size:18px;
+      font-weight:bold;
+    }
+    &>div{
+      width:200px;
+      display:flex;
+      color:#fff;
+      font-size:18px;
+      font-weight:bold;
+      a{
+        color:#fff;
+        font-size:18px;
+        font-weight:bold;
+      }
     }
   }
   .logOut{
@@ -312,12 +317,62 @@ header{
 main{
   background:#00324e;
   box-sizing:border-box;
-  padding:20px calc((100% - 1000px)/2)
+  padding:20px;
 }
 footer{
   text-align: center;
   padding:20px;
   font-weight: bold;
   font-size: 20px;
+}
+@media(max-width:768px){
+  header{
+    .logo{
+      flex-basis:unset;
+      width:15%;
+      padding-right:20px;
+      box-sizing:border-box;
+      img{
+        width:100%;
+      }
+    }
+  }
+}
+@media(max-width:600px){
+  header{
+    position:relative;
+    .logo{
+      flex-basis:unset;
+      width:35%;
+      padding-right:20px;
+      box-sizing:border-box;
+      img{
+        width:100%;
+      }
+    }
+    .searchBar{
+      justify-content: flex-end;
+      a{
+        color:#fff;
+        display:inline-block;
+      }
+      &>div{
+        box-sizing:border-box;
+        padding:10px 20px;
+        // background:rgba(212, 212, 212, 0.7);
+        background:#acacac;
+        display:none;
+        position:absolute;
+        top:100%;
+        left:0;
+        input{
+          border:0;
+        }
+      }
+    }
+    .user{
+      // order:2;
+    }
+  }
 }
 </style>

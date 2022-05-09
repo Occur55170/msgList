@@ -1,63 +1,106 @@
 <template>
   <div class="memberInfo">
     <h1>會員資料</h1>
-    <div class="mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
+    <div class="memberItem mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
       <h5 class="fw-bold mb-2 w-100">使用者姓名:</h5>
-      <div>
-        <span>{{ member.name }}</span>
-        <input type="text" name="" id="">
-      </div>
-      <button>修改</button>
+      <span>{{ member.name }}</span>
+      <button @click="openModifyModal('name', member.name)">修改</button>
     </div>
-    <div class="mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
+    <div class="memberItem mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
+      <h5 class="fw-bold mb-2 w-100">使用者性別:</h5>
+      <span v-show="member.male == 'boy'">男</span>
+      <span v-show="member.male == 'girl'">女</span>
+      <button @click="openModifyModal('male', member.male)">修改</button>
+    </div>
+    <div class="memberItem mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
       <h5 class="fw-bold mb-2 w-100">使用者帳號:</h5>
-      <div>
-        <span>{{ member.account }}</span>
-        <input type="text" name="" id="">
-      </div>
-      <button>修改</button>
+      <span>{{ member.account }}</span>
+      <button @click="openModifyModal('account', member.account)">修改</button>
     </div>
-    <div class="mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
+    <div class="memberItem mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
       <h5 class="fw-bold mb-2 w-100">使用者密碼:</h5>
-      <div>
-        <span>{{ member.password }}</span>
-      <input type="text" name="" id="">
-      </div>
-      <button>修改</button>
+      <span>{{ member.password }}</span>
+      <button @click="openModifyModal('password', member.password)">修改</button>
     </div>
-    <div class="mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
+    <div class="memberItem mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
       <h5 class="fw-bold mb-2 w-100">使用者信箱:</h5>
-      <div>
-        <span>{{ member.email }}</span>
-      <input type="text" name="" id="">
-      </div>
-      <button>修改</button>
+      <span>{{ member.email }}</span>
+      <button @click="openModifyModal('email', member.email)">修改</button>
     </div>
-    <div class="mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
+    <div class="memberItem mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
       <h5 class="fw-bold mb-2 w-100">註冊日期:</h5>
       <span>{{ member.signDate }}</span>
     </div>
+    <div class="memberItem mb-4 pb-3 d-flex flex-wrap align-items-center justify-content-between border-bottom">
+      <h5 class="fw-bold mb-2 w-100">使用者編號:</h5>
+      <span>{{ member.memberID }}</span>
+    </div>
     <div>
-      收藏文章:
+      <h5 class="fw-bold mb-2 w-100">收藏文章:</h5>
       <ul>
         <li v-for="(item, key) in member.collect" :key='key'>
           <a href="#" @click.prevent="pushArticle(item.Aid)">{{ item.title }}</a>
         </li>
       </ul>
     </div>
-    <!-- <p>說讚的文章:{{ member.likeList }}</p> -->
+    <!-- Modal -->
+    <div class="modal fade" id="modifyModal" ref="modifyModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title font-weight-bold">修改{{ modify.item }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body px-5 py-3">
+            <div class="mb-3" v-if="modify.item !== '性別'">
+              <div class="mb-3">
+                <label class="oldItemName" for="account">舊{{ modify.item }}</label>
+                <span>{{ modify.old }}</span>
+              </div>
+              <label class="newItemName" for="mItem">新{{ modify.item }}</label>
+              <input class="newItemInput" type="text" id="mItem" :name="modify.item" :placeholder="`請輸入新${modify.item}`" required maxlength="20" v-model="modify.new">
+            </div>
+            <div v-if="modify.item == '性別'">
+              <div class="mb-3">
+                <label class="oldItemName" for="account">原{{ modify.item }}</label>
+                <span v-show="modify.old == 'boy'">男</span>
+                <span v-show="modify.old == 'girl'">女</span>
+              </div>
+              <label>
+                <input type="radio" value="boy" v-model="modify.new">男
+              </label>
+              <label>
+                <input type="radio" value="girl" v-model="modify.new">女
+              </label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-danger" type="submit" @click="enterModifyModal" :disabled="modify.new==''">確認</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 // import $ from 'jquery'
+import { Modal } from 'bootstrap'
 
 export default {
   name: 'memberInfo',
   data () {
     return {
       memberID: '',
-      member: {}
+      modify: {
+        sort: '',
+        item: '',
+        old: '',
+        new: ''
+      },
+      member: {
+        male: ''
+      }
     }
   },
   props: ['userID'],
@@ -71,17 +114,10 @@ export default {
         'type': 'getMember'
       })
       vm.$http.post(api, data).then(response => {
+        console.log(response)
         if (response.data.success) {
           if (response.data.userStatus && vm.userID !== '') {
-            vm.member = {
-              'account': response.data.userData.account,
-              'password': response.data.userData.password,
-              'email': response.data.userData.email,
-              'likeList': response.data.userData.likeList,
-              'name': response.data.userData.name,
-              'signDate': response.data.userData.signDate,
-              'memberID': response.data.userData.userID
-            }
+            vm.member = response.data.userData
             vm.member.collect = JSON.parse(response.data.userData.collect)
             vm.$store.dispatch('upadateisLoad', false)
           } else {
@@ -91,11 +127,65 @@ export default {
           }
         } else {
           console.log(response.data.message)
+          vm.$store.dispatch('upadateisLoad', false)
         }
       })
     },
     pushArticle (Aid) {
       this.$router.push(`/articleCon/${Aid}`)
+    },
+    openModifyModal (sort, data) {
+      this.modify.sort = sort
+      this.modify.new = ''
+      this.modal = new Modal(this.$refs.modifyModal)
+      switch (sort) {
+        case 'name':
+          this.modify.item = '姓名'
+          break
+        case 'male':
+          this.modify.new = data
+          this.modify.item = '性別'
+          break
+        case 'account':
+          this.modify.item = '帳號'
+          break
+        case 'password':
+          this.modify.item = '密碼'
+          break
+        case 'email':
+          this.modify.item = '信箱'
+          break
+        default:
+          alert('系統錯誤，請重新操作')
+      }
+      this.modify.old = data
+      this.modal.show()
+    },
+    enterModifyModal () {
+      const vm = this
+      vm.$store.dispatch('upadateisLoad', true)
+      let api = `https://script.google.com/macros/s/AKfycbz3iOitzTsNhaBrxIc6K3w94dzCEF_w3ptmVxv2InhPbWCx6PHYz6pwCVS5OE5KrXQI/exec`
+      let formData = JSON.stringify({
+        memberID: vm.member.memberID,
+        type: 'modify',
+        sort: vm.modify.sort,
+        newData: vm.modify.new
+      })
+      console.log(formData)
+      vm.$http.post(api, formData).then(response => {
+        console.log(response)
+        if (response.data.success) {
+          console.log(response.data)
+          vm.$bus.$emit('message:push', response.data.message, 'success')
+          vm.modal.hide()
+          vm.userMode = 'loginIn'
+          vm.getMember(this.userID)
+          console.log(response.data.memberID)
+        } else {
+          console.log(response.data)
+          vm.$store.dispatch('upadateisLoad', false)
+        }
+      })
     }
   },
   created () {
@@ -120,8 +210,31 @@ export default {
   p{
     margin-bottom:10px;
   }
+  .oldItemName,.newItemName{
+    margin-right:10px;
+  }
   .textContent{
     text-align:left;
   }
+}
+@media(max-width:768px){
+  .memberInfo{
+    max-width:600px;
+    margin: 20px auto;
+  }
+  .memberItem{
+    h5{
+      font-size:20px;
+    }
+    span{
+      font-size:18px;
+    }
+  }
+}
+@media(max-width:600px){
+  .memberInfo{
+    padding: 20px 30px;
+  }
+
 }
 </style>

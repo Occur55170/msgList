@@ -600,4 +600,67 @@ export default {
     }
   }
 }
+@media(max-width:768px){
+  .articleCon .message .newMessage{
+    input{
+      width:85%;
+    }
+    button{
+      width:13%;
+    }
+  }
+}
+@media(max-width:600px){
+  .articleCon{
+    .articlePage{
+      padding: 30px 15px;
+      .head{
+        h2{
+          font-weight:bold;
+          line-height:1.3;
+        }
+        &>h6{
+          margin-top:20px;
+        }
+      }
+    }
+    .articlefeatures{
+      padding: 0 15px 20px 15px;
+      div{
+        padding:10px;
+      }
+    }
+    .message{
+      padding:20px;
+      ul{
+        .avatar{
+          margin-right:5px;
+          div{
+            width:30px;
+            height:30px;
+          }
+          i{
+            font-size: 20px;
+          }
+        }
+        .reply{
+          margin-left: 40px;
+          margin-top: 0px !important;
+        }
+      }
+      .newMessage{
+        text-align:center;
+        input{
+          width:100%;
+          margin-bottom:10px;
+          font-size:20px;
+        }
+        button{
+          width:auto;
+          margin: 0 auto;
+        }
+      }
+    }
+  }
+}
 </style>

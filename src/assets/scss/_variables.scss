@@ -1657,3 +1657,9 @@ $pre-color:                         null !default;
     padding-right:2% !important;
   }
 }
+@media(max-width:600px){
+  .indexContainer{
+    padding-left:5% !important;
+    padding-right:5% !important;
+  }
+}
