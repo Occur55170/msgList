@@ -3,7 +3,7 @@
     <div class="articlePage">
       <div class="head mb-4">
         <div class="d-flex justify-content-between">
-          <a href="" @click.prevent="goback">回上頁</a>
+          <a href="#" @click.prevent="goback">回上頁</a>
           <h6>{{ article.author }}</h6>
         </div>
         <h2 class="font-weight-bold mt-4 mb-2">{{ article.title }}</h2>
@@ -16,14 +16,14 @@
     <div class="articlefeatures">
       <div>
         <p>
-          <a href="" @click.prevent="articleLike" class="good">
+          <a href="#" @click.prevent="articleLike" class="good">
             <span v-if="article.likeList.indexOf(`${ userID }`) !== -1 && userID !== ''"><i class="fa-solid fa-thumbs-up"></i>{{ article.likeList.length }}</span>
             <span v-else><i class="fa-regular fa-thumbs-up"></i>{{ article.likeList.length }}</span>
           </a>
         </p>
         <p>
-          <a href="" @click.prevent="articleCollect" class="collect" v-if="article.collect.indexOf(JSON.stringify(userID)) !== -1 && userID !== ''"><i class="fa-solid fa-star"></i>取消收藏</a>
-          <a href="" @click.prevent="articleCollect" class="collect" v-else><i class="fa-regular fa-star"></i>收藏</a>
+          <a href="#" @click.prevent="articleCollect" class="collect" v-if="article.collect.indexOf(JSON.stringify(userID)) !== -1 && userID !== ''"><i class="fa-solid fa-star"></i>取消收藏</a>
+          <a href="#" @click.prevent="articleCollect" class="collect" v-else><i class="fa-regular fa-star"></i>收藏</a>
         </p>
       </div>
     </div>
@@ -42,15 +42,15 @@
               <p class="content">{{ item.mainMsg.content }}</p>
               <p class="time"><span>B{{ key+1 }}</span>{{ item.mainMsg.time }}</p>
               <div class="MSGfeatures">
-                <a href="" class="mx-2" @click.prevent="openReply(key)">回覆</a>
-                <a href="" class="mx-2" @click.prevent="addMSGlike(item.mainMsg.msgID, userID)">
+                <a href="#" class="mx-2" @click.prevent="openReply(key)">回覆</a>
+                <a href="#" class="mx-2" @click.prevent="addMSGlike(item.mainMsg.msgID, userID)">
                   <i class="fa-solid fa-thumbs-up" v-if="item.mainMsg.good.indexOf(`${userID}`) !== -1"></i>
                   <i class="fa-regular fa-thumbs-up" v-else></i>
                 </a>
                 {{ item.mainMsg.good.length }}
               </div>
             </div>
-            <a href="" class="del" @click.prevent="delMessage(item.mainMsg.msgID)" v-if="item.mainMsg.userID == userID">刪除</a>
+            <a href="#" class="del" @click.prevent="delMessage(item.mainMsg.msgID)" v-if="item.mainMsg.userID == userID">刪除</a>
           </div>
           <div class="NewReply" :class="`reply-${key}`">
             <div>
@@ -69,14 +69,14 @@
               <p class="content">{{ reply.content }}</p>
               <p class="time"><span>B{{ key+1 }}<em>-{{ index+1 }}</em></span>{{ reply.time }}</p>
               <div class="MSGfeatures">
-                <a href="" class="mx-2" @click.prevent="addMSGlike(reply.msgID, userID)">
+                <a href="#" class="mx-2" @click.prevent="addMSGlike(reply.msgID, userID)">
                   <i class="fa-solid fa-thumbs-up" v-if="reply.good.indexOf(`${userID}`) !== -1"></i>
                   <i class="fa-regular fa-thumbs-up" v-else></i>
                 </a>
                 {{ reply.good.length }}
               </div>
             </div>
-            <a href="" class="del" @click.prevent="delMessage(reply.msgID)" v-if="reply.userID == userID">刪除</a>
+            <a href="#" class="del" @click.prevent="delMessage(reply.msgID)" v-if="reply.userID == userID">刪除</a>
           </div>
         </li>
       </ul>
