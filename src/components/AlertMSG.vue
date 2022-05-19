@@ -1,53 +1,24 @@
 <template>
   <div class="message-alert">
-    <div class="alert"
-      :class="'alert-' + item.status"
-      v-for="(item, i) in messages" :key="i">
-      <span>{{ item.message }}</span>
-      <a  class="close" @click="removeMessage(i)" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </a>
+    <div class="alert alert-dismissible" :class="`alert-${item.success}`" v-for="(item, i) in messages" :key="i">
+      {{ item.message }}
+      <button type="button" class="close" @click="removeMessage(i)" aria-label="Close">
+        &times;
+      </button>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
+
 export default {
-  name: 'Navbar',
-  data () {
-    return {
-      messages: []
-    }
-  },
+  name: 'AlertMSG',
   methods: {
-    updateMessage (message, status) {
-      const timestamp = Math.floor(new Date() / 1000)
-      this.messages.push({
-        message,
-        status,
-        timestamp
-      })
-      this.removeMessageWithTiming(timestamp)
-    },
-    removeMessage (num) {
-      this.messages.splice(num, 1)
-    },
-    removeMessageWithTiming (timestamp) {
-      const vm = this
-      setTimeout(() => {
-        vm.messages.forEach((item, i) => {
-          if (item.timestamp === timestamp) {
-            vm.messages.splice(i, 1)
-          }
-        })
-      }, 5000)
-    }
+    ...mapActions('messageModules', ['removeMessage'])
   },
-  created () {
-    const vm = this
-    vm.$bus.$on('message:push', (message, status = 'warning') => {
-      vm.updateMessage(message, status)
-    })
+  computed: {
+    ...mapGetters('messageModules', ['messages'])
   }
 }
 </script>
@@ -59,10 +30,18 @@ export default {
   top: 56px;
   right: 20px;
   z-index: 1100;
+  &>div{
+    padding:10px;
+  }
   .close {
     cursor: pointer;
     margin-left:20px;
     text-decoration:none;
+    background:transparent;
+    border:0;
+    position:relative;
+    top:0;
+    right:0;
   }
 }
 </style>

@@ -114,7 +114,6 @@ export default {
         'type': 'getMember'
       })
       vm.$http.post(api, data).then(response => {
-        console.log(response)
         if (response.data.success) {
           if (response.data.userStatus && vm.userID !== '') {
             vm.member = response.data.userData
@@ -126,7 +125,6 @@ export default {
             vm.$store.dispatch('upadateisLoad', false)
           }
         } else {
-          console.log(response.data.message)
           vm.$store.dispatch('upadateisLoad', false)
         }
       })
@@ -171,18 +169,15 @@ export default {
         sort: vm.modify.sort,
         newData: vm.modify.new
       })
-      console.log(formData)
       vm.$http.post(api, formData).then(response => {
-        console.log(response)
         if (response.data.success) {
-          console.log(response.data)
-          vm.$bus.$emit('message:push', response.data.message, 'success')
+          let message = response.data.message
+          let success = 'success'
+          vm.$store.dispatch('messageModules/updateMessage', { message, success })
           vm.modal.hide()
           vm.userMode = 'loginIn'
           vm.getMember(this.userID)
-          console.log(response.data.memberID)
         } else {
-          console.log(response.data)
           vm.$store.dispatch('upadateisLoad', false)
         }
       })

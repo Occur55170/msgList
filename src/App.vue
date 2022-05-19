@@ -4,9 +4,9 @@
     <header class="indexContainer">
       <div>
         <div class="logo">
-          <router-link to="/">
+          <RouterLink to="/">
             <img src="@/assets/logo.png" alt="">
-          </router-link>
+          </RouterLink>
         </div>
         <div class="searchBar">
           <div>
@@ -24,7 +24,7 @@
       </div>
     </header>
     <main class="indexContainer">
-      <router-view class="section" :searchText="searchText" :userID="userID" :user="user" @openLoginIn="openLoginIn"></router-view>
+      <RouterView class="section" :searchText="searchText" :userID="userID" :user="user" @openLoginIn="openLoginIn"></RouterView>
     </main>
     <footer>
       練習作業用網站
@@ -147,13 +147,16 @@ export default {
       let formData = JSON.stringify(vm.user)
       vm.axios.post(api, formData).then(function (response) {
         if (response.data[0].message === '註冊成功') {
-          console.log(response.data[0])
-          vm.$bus.$emit('message:push', response.data[0].message, 'success')
+          let message = response.data[0].message
+          let success = 'success'
+          vm.$store.dispatch('messageModules/updateMessage', { message, success })
           vm.modal.hide()
           vm.user = {}
           vm.userMode = 'loginIn'
         } else {
-          console.log(response.data[0].message)
+          let message = response.data[0].message
+          let success = 'danger'
+          vm.$store.dispatch('messageModules/updateMessage', { message, success })
         }
         vm.$store.dispatch('upadateisLoad', false)
       })
@@ -171,7 +174,9 @@ export default {
       vm.axios.post(api, formData).then(function (response) {
         response.data = response.data[0]
         if (response.data.success) {
-          vm.$bus.$emit('message:push', response.data.message, 'success')
+          let message = response.data.message
+          let success = 'success'
+          vm.$store.dispatch('messageModules/updateMessage', { message, success })
           vm.logAc = ''
           vm.logPwd = ''
           vm.userID = response.data.userID
@@ -181,8 +186,9 @@ export default {
           vm.user.likeList = JSON.parse(response.data.likeList)
           vm.modal.hide()
         } else {
-          // console.log(response.data.success)
-          vm.$bus.$emit('message:push', response.data.message, 'danger')
+          let message = response.data.message
+          let success = 'danger'
+          vm.$store.dispatch('messageModules/updateMessage', { message, success })
           vm.modal.hide()
         }
         vm.$store.dispatch('upadateisLoad', false)
@@ -199,14 +205,15 @@ export default {
       })
       vm.axios.post(api, formData).then(function (response) {
         response.data = response.data[0]
-        console.log(response.data)
         if (response.data.success) {
           // 恢復預設值
           vm.userID = ''
           vm.logAc = ''
           vm.logPwd = ''
           vm.user = {}
-          vm.$bus.$emit('message:push', response.data.message, 'success')
+          let message = response.data.message
+          let success = 'success'
+          vm.$store.dispatch('messageModules/updateMessage', { message, success })
         }
         // 登出後 看要回此頁，但是不可在使用者頁面
         if (vm.$route.name === 'MemberInfo') {
@@ -227,7 +234,6 @@ export default {
       this.$store.dispatch('upadateisLoad', false)
     },
     openSearch () {
-      // $('.searchBar>div').slideToggle()
       $('.searchBar>div').toggle()
     }
   },
@@ -246,7 +252,7 @@ export default {
 <style lang="scss">
 @import '@/assets/scss/all.scss';
 header{
-  background:#006aa6;
+  background:#B8BB9A;
   padding:20px 0;
   &>div{
     display: flex;
@@ -255,11 +261,12 @@ header{
     margin: 0 auto;
   }
   .logo{
-    flex-basis:200px;
+    width:150px;
     flex-grow:0;
     flex-shrink:0;
     img{
       display:block;
+      width:100%;
     }
   }
   .searchBar{
@@ -267,6 +274,7 @@ header{
     flex-grow: 2;
     flex-shrink: 2;
     width: 100%;
+    padding:0 3%;
     box-sizing:border-box;
     display: flex;
     &>div{
@@ -274,12 +282,11 @@ header{
     }
     input{
       width: 100%;
-      border: 0;
       box-sizing: border-box;
       padding:5px 10px;
-      border-radius:5px;
+      border: 0;
       border:1px solid rgb(38, 38, 38);
-      border-right: 0;
+      border-radius:5px;
     }
     a{
       display:none;
@@ -290,7 +297,7 @@ header{
     margin-left:15px;
     button{
       width:100px;
-      color:#fff;
+      color:#000;
       background:transparent;
       border:0;
       font-size:18px;
@@ -299,11 +306,11 @@ header{
     &>div{
       width:200px;
       display:flex;
-      color:#fff;
+      color:#000;
       font-size:18px;
       font-weight:bold;
       a{
-        color:#fff;
+        color:#000;
         font-size:18px;
         font-weight:bold;
       }
@@ -315,9 +322,9 @@ header{
   }
 }
 main{
-  background:#00324e;
+  background:#cba282;
   box-sizing:border-box;
-  padding:20px;
+  padding:20px 10px;
 }
 footer{
   text-align: center;
@@ -359,7 +366,6 @@ footer{
       &>div{
         box-sizing:border-box;
         padding:10px 20px;
-        // background:rgba(212, 212, 212, 0.7);
         background:#acacac;
         display:none;
         position:absolute;
@@ -367,11 +373,9 @@ footer{
         left:0;
         input{
           border:0;
+          border-right: 0;
         }
       }
-    }
-    .user{
-      // order:2;
     }
   }
 }

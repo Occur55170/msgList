@@ -8,6 +8,8 @@ import messageModules from './message'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
+  strict: true,
+  namespaced: true,
   state: {
     isLoading: false
   },
@@ -23,26 +25,6 @@ export default new Vuex.Store({
   },
   getters: {
     isLoading: state => state.isLoading
-    // getlogStatus (state, userID) {
-    //   const api = `${process.env.VUE_APP_MEMBER}`
-    //   let data = { 'userID': userID }
-    //   if (userID !== '') {
-    //     $.ajax({
-    //       type: 'get',
-    //       url: api,
-    //       data: data,
-    //       success: response => {
-    //         response = JSON.parse(response)
-    //         console.log(response)
-    //       },
-    //       error: response => {
-    //         console.log(response)
-    //       }
-    //     })
-    //   } else {
-    //     console.log('尚未登入')
-    //   }
-    // }
   },
   modules: {
     memberModules,

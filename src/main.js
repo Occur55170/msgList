@@ -10,7 +10,6 @@ import * as rules from 'vee-validate/dist/rules'
 import App from './App'
 import router from './router'
 import store from './store/store'
-import './bus'
 
 Vue.config.productionTip = false
 Vue.use(VueAxios, axios)
