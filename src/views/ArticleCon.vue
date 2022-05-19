@@ -15,14 +15,16 @@
     </div>
     <div class="articlefeatures">
       <div>
-        <span>
-          <a href="" @click.prevent="articleLike" class="good" v-if="article.likeList.indexOf(userID) !== -1 && userID !== ''"><i class="fa-solid fa-thumbs-up"></i>收回讚</a>
-          <a href="" @click.prevent="articleLike" class="good" v-else><i class="fa-regular fa-thumbs-up"></i>讚</a>
-        </span>
-        <span>
+        <p>
+          <a href="" @click.prevent="articleLike" class="good">
+            <span v-if="article.likeList.indexOf(`${ userID }`) !== -1 && userID !== ''"><i class="fa-solid fa-thumbs-up"></i>{{ article.likeList.length }}</span>
+            <span v-else><i class="fa-regular fa-thumbs-up"></i>{{ article.likeList.length }}</span>
+          </a>
+        </p>
+        <p>
           <a href="" @click.prevent="articleCollect" class="collect" v-if="article.collect.indexOf(JSON.stringify(userID)) !== -1 && userID !== ''"><i class="fa-solid fa-star"></i>取消收藏</a>
           <a href="" @click.prevent="articleCollect" class="collect" v-else><i class="fa-regular fa-star"></i>收藏</a>
-        </span>
+        </p>
       </div>
     </div>
     <div class="message">
@@ -125,12 +127,16 @@ export default {
             vm.article.likeList = JSON.parse(vm.article.likeList)
             vm.$store.dispatch('upadateisLoad', false)
           } else {
-            console.log(response.message)
+            let message = response.message
+            let success = 'danger'
+            vm.$store.dispatch('messageModules/updateMessage', { message, success })
             vm.$store.dispatch('upadateisLoad', false)
           }
         },
         error: function (response) {
-          console.log(response)
+          let message = '系統出錯，請稍後在試一次或者聯絡客服人員'
+          let success = 'danger'
+          vm.$store.dispatch('messageModules/updateMessage', { message, success })
         }
       })
     },
@@ -151,23 +157,26 @@ export default {
           url: `${process.env.VUE_APP_USER}`,
           data: data,
           success: function (response) {
-            console.log(response)
             response = JSON.parse(response)
             if (response.success) {
               if (response.mode === 'receive') {
-                vm.$bus.$emit('message:push', '收藏成功', 'success')
+                let message = '收藏成功'
+                let success = 'success'
+                vm.$store.dispatch('messageModules/updateMessage', { message, success })
               } else if (response.mode === 'put') {
-                vm.$bus.$emit('message:push', '取消收藏成功', 'success')
+                let message = '取消收藏成功'
+                let success = 'success'
+                vm.$store.dispatch('messageModules/updateMessage', { message, success })
               }
               vm.getArticleCon()
             } else {
-              vm.$bus.$emit('message:push', response.message, 'danger')
-              console.log(response.message)
+              let message = response.message
+              let success = 'danger'
+              vm.$store.dispatch('messageModules/updateMessage', { message, success })
               vm.$store.dispatch('upadateisLoad', false)
             }
           },
           error: function (response) {
-            console.log(response)
             vm.$store.dispatch('upadateisLoad', false)
           }
         })
@@ -183,18 +192,22 @@ export default {
         let data = JSON.stringify({
           'Aid': vm.Aid,
           'title': vm.article.title,
-          'userID': vm.userID
+          'userID': JSON.stringify(vm.userID)
         })
-        console.log(data)
         let api = `${process.env.VUE_APP_ARTICLE}`
         vm.$http.post(api, data).then(response => {
-          console.log(response)
           if (response.data.success && response.data.mode === 'press') {
-            // vm.$bus.$emit('message:push', '按讚', 'success')
+            let message = '按讚'
+            let success = 'success'
+            vm.$store.dispatch('messageModules/updateMessage', { message, success })
           } else if (response.data.success && response.data.mode === 'takeback') {
-            // vm.$bus.$emit('message:push', '收回讚', 'success')
+            let message = '收回讚'
+            let success = 'success'
+            vm.$store.dispatch('messageModules/updateMessage', { message, success })
           } else {
-            vm.$bus.$emit('message:push', response.message, 'danger')
+            let message = response.message
+            let success = 'danger'
+            vm.$store.dispatch('messageModules/updateMessage', { message, success })
           }
           vm.getArticleCon()
         })
@@ -232,7 +245,9 @@ export default {
           vm.$store.dispatch('upadateisLoad', false)
         },
         error: function (response) {
-          console.log(response)
+          let message = '留言載入錯誤，請稍後在試一次或者聯絡客服人員'
+          let success = 'danger'
+          vm.$store.dispatch('messageModules/updateMessage', { message, success })
         }
       })
     },
@@ -264,17 +279,18 @@ export default {
         data: data,
         success: function (response) {
           response = JSON.parse(response)[0]
+          let message = response.message
           if (response.success) {
-            vm.$bus.$emit('message:push', response.message, 'success')
+            let success = 'success'
+            vm.$store.dispatch('messageModules/updateMessage', { message, success })
             vm.getMessage()
           } else {
-            console.log(response)
-            vm.$bus.$emit('message:push', response.message, 'danger')
+            let success = 'danger'
+            vm.$store.dispatch('messageModules/updateMessage', { message, success })
             vm.$store.dispatch('upadateisLoad', false)
           }
         },
         error: function (response) {
-          console.log(response)
           alert('系統出錯，請稍後在試一次或者聯絡客服人員')
           vm.$store.dispatch('upadateisLoad', false)
         }
@@ -288,25 +304,25 @@ export default {
         'mid': vm.Aid,
         'msgID': msgID
       }
-      console.log(data)
       $.ajax({
         type: 'post',
         url: `${process.env.VUE_APP_MESSAGE}`,
         data: data,
         success: function (response) {
           response = JSON.parse(response)[0]
-          console.log('del', response)
+          let message = response.message
           if (response.success) {
-            vm.$bus.$emit('message:push', response.message, 'success')
+            let success = 'success'
+            vm.$store.dispatch('messageModules/updateMessage', { message, success })
             vm.getMessage()
           } else {
-            console.log(response)
-            vm.$bus.$emit('message:push', response.message, 'danger')
+            let success = 'danger'
+            vm.$store.dispatch('messageModules/updateMessage', { message, success })
             vm.$store.dispatch('upadateisLoad', false)
           }
         },
         error: function (response) {
-          console.log(response)
+          alert('系統出錯，請稍後在試一次或者聯絡客服人員')
         }
       })
     },
@@ -348,16 +364,16 @@ export default {
         data: data,
         success: function (response) {
           response = JSON.parse(response)[0]
+          let message = response.message
           if (response.success) {
-            console.log(response)
-            vm.$bus.$emit('message:push', response.message, 'success')
+            let success = 'success'
+            vm.$store.dispatch('messageModules/updateMessage', { message, success })
           } else {
-            console.log(response)
-            vm.$bus.$emit('message:push', response.message, 'danger')
+            let success = 'danger'
+            vm.$store.dispatch('messageModules/updateMessage', { message, success })
           }
         },
         error: function (response) {
-          console.log(response)
           alert('系統出錯，請稍後在試一次或者聯絡客服人員')
           vm.$store.dispatch('upadateisLoad', false)
         }
@@ -385,14 +401,20 @@ export default {
           success: function (response) {
             response = response[0]
             if (response.success) {
-              console.log(response.message)
+              let message = response.message
+              let success = 'success'
+              vm.$store.dispatch('messageModules/updateMessage', { message, success })
             } else {
-              console.log(response.message)
+              let message = response.message
+              let success = 'success'
+              vm.$store.dispatch('messageModules/updateMessage', { message, success })
             }
             vm.$store.dispatch('upadateisLoad', false)
           },
           error: function (response) {
-            console.log(response)
+            let message = '系統出錯，請稍後在試一次或者聯絡客服人員'
+            let success = 'danger'
+            vm.$store.dispatch('messageModules/updateMessage', { message, success })
           }
         }).then(() => {
           vm.getMessage()
@@ -454,17 +476,27 @@ export default {
       border-top:1px solid #ced0d4;
       border-bottom:1px solid #ced0d4;
     }
+    p{
+      margin-bottom:0;
+    }
+    span{
+      font-size: 20px;
+    }
     a{
       box-sizing:border-box;
       font-size:20px;
-      margin:0 20px;
+      margin:0 10px;
       text-decoration:none;
       color:#606770;
-      // &.collect{
-      //   font-size:26px;
-      //   background:#999;
-      //   color:#fff;
-      // }
+      i{
+        margin-right:10px;
+      }
+      .fa-solid.fa-thumbs-up{
+        color:#CE0000
+      }
+      .fa-solid.fa-star{
+        color:#EAC100;
+      }
     }
   }
   .message{
