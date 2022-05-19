@@ -275,17 +275,17 @@ export default {
 @media(max-width:768px){
   .articleList{
     nav{
-      width:15%;
       padding-right: 10px;
-      ul{
-        margin-top:0;
-      }
-      a{
-        padding:10px 0 10px 20px;
-      }
+    }
+    aside{
+      width: 23%;
+      padding: 30px 0;
     }
     section{
-      width:85%;
+      margin-right:2%;
+      article{
+        .articleImg{}
+      }
     }
   }
 }
@@ -294,7 +294,7 @@ export default {
     flex-wrap:wrap;
     nav{
       width:100%;
-      padding-right: 0;
+      padding: 0;
       ul{
         width:100%;
         margin-top:0;
@@ -316,11 +316,21 @@ export default {
         font-weight:bold;
       }
     }
+    aside{
+      display:none;
+    }
     section{
+      .title{
+        display:none;
+      }
       width:100%;
-      padding:20px 30px;
+      padding:20px 0;
       article{
-        padding: 20px 0;
+        width:100%;
+        padding: 10px 0;
+        p, h3{
+          padding: 0 15px;
+        }
       }
     }
   }
