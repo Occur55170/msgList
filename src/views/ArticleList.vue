@@ -118,7 +118,6 @@ export default {
     recommendList () {
       const vm = this
       let newAry = vm.articleList.filter(item => item.likeList.length > 1)
-      console.log(newAry)
       return newAry
     }
   },

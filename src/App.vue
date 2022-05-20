@@ -62,7 +62,6 @@
             <div v-if="userMode=='signUp'">
               <validation-observer class="mb-3" v-slot="{ invalid }">
                 <form ref="form">
-                  <button type="reset">Reset</button>
                   <validation-provider rules="required" v-slot="{ errors,classes }" class="mb-3 d-block">
                     <label for="username">名稱</label>
                     <input type="text" class="form-control" :class="classes" name="名稱" id="username" v-model.trim="user.name" placeholder="輸入名稱">
