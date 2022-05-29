@@ -15,10 +15,10 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'AlertMSG',
   methods: {
-    ...mapActions('messageModules', ['removeMessage'])
+    ...mapActions('AlertMSGModules', ['removeMessage'])
   },
   computed: {
-    ...mapGetters('messageModules', ['messages'])
+    ...mapGetters('AlertMSGModules', ['messages'])
   }
 }
 </script>

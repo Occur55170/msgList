@@ -2,8 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 // import axios from 'axios'
 // import $ from 'jquery'
-import memberModules from './member'
-import messageModules from './message'
+// import memberModules from './member'
+import AlertMSGModules from './AlertMessage'
 
 Vue.use(Vuex)
 
@@ -27,7 +27,7 @@ export default new Vuex.Store({
     isLoading: state => state.isLoading
   },
   modules: {
-    memberModules,
-    messageModules
+    // memberModules,
+    AlertMSGModules
   }
 })

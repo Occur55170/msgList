@@ -7,13 +7,26 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 import { ValidationObserver, ValidationProvider, extend, localize, configure } from 'vee-validate'
 import TW from 'vee-validate/dist/locale/zh_TW.json'
 import * as rules from 'vee-validate/dist/rules'
+import VueMeta from 'vue-meta'
+
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { fab } from '@fortawesome/free-brands-svg-icons'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+
 import App from './App'
 import router from './router'
 import store from './store/store'
 
-Vue.config.productionTip = false
+library.add(fab)
+library.add(fas)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+
 Vue.use(VueAxios, axios)
+Vue.use(VueMeta)
 Vue.component('Loading', Loading)
+
 Vue.config.productionTip = false
 
 Object.keys(rules).forEach((rule) => {

@@ -17,13 +17,13 @@
       <div>
         <p>
           <a href="#" @click.prevent="articleLike" class="good">
-            <span v-if="article.likeList.indexOf(`${ userID }`) !== -1 && userID !== ''"><i class="fa-solid fa-thumbs-up"></i>{{ article.likeList.length }}</span>
-            <span v-else><i class="fa-regular fa-thumbs-up"></i>{{ article.likeList.length }}</span>
+            <span v-if="article.likeList.indexOf(`${ userID }`) !== -1 && userID !== ''"><i is="font-awesome-icon" icon="fa-solid fa-thumbs-up" />{{ article.likeList.length }}</span>
+            <span v-else><i is="font-awesome-icon" icon="fa-regular fa-thumbs-up" />{{ article.likeList.length }}</span>
           </a>
         </p>
         <p>
           <a href="#" @click.prevent="articleCollect" class="collect" v-if="article.collect.indexOf(JSON.stringify(userID)) !== -1 && userID !== ''"><i class="fa-solid fa-star"></i>取消收藏</a>
-          <a href="#" @click.prevent="articleCollect" class="collect" v-else><i class="fa-regular fa-star"></i>收藏</a>
+          <a href="#" @click.prevent="articleCollect" class="collect" v-else><i is="font-awesome-icon" icon="fa-solid fa-star" />收藏</a>
         </p>
       </div>
     </div>
@@ -34,7 +34,7 @@
           <div class="mainReply">
             <div class="avatar">
               <div :class="item.mainMsg.male">
-                <i class="fas fa-user"></i>
+                <i is='font-awesome-icon' icon="fa-solid fa-user"></i>
               </div>
             </div>
             <div>
@@ -61,7 +61,7 @@
           <div class="reply mt-4" v-for="(reply,index) in item.reply" :key="index">
             <div class="avatar">
               <div :class="reply.male">
-                <i class="fas fa-user"></i>
+                <i is='font-awesome-icon' icon="fa-solid fa-user"></i>
               </div>
             </div>
             <div>
@@ -93,6 +93,11 @@ import $ from 'jquery'
 
 export default {
   name: 'articleCon',
+  metaInfo () {
+    return {
+      title: this.article.title
+    }
+  },
   data () {
     return {
       Aid: '',
@@ -129,14 +134,14 @@ export default {
           } else {
             let message = response.message
             let success = 'danger'
-            vm.$store.dispatch('messageModules/updateMessage', { message, success })
+            vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
             vm.$store.dispatch('upadateisLoad', false)
           }
         },
         error: function (response) {
           let message = '系統出錯，請稍後在試一次或者聯絡客服人員'
           let success = 'danger'
-          vm.$store.dispatch('messageModules/updateMessage', { message, success })
+          vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
         }
       })
     },
@@ -162,17 +167,17 @@ export default {
               if (response.mode === 'receive') {
                 let message = '收藏成功'
                 let success = 'success'
-                vm.$store.dispatch('messageModules/updateMessage', { message, success })
+                vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
               } else if (response.mode === 'put') {
                 let message = '取消收藏成功'
                 let success = 'success'
-                vm.$store.dispatch('messageModules/updateMessage', { message, success })
+                vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
               }
               vm.getArticleCon()
             } else {
               let message = response.message
               let success = 'danger'
-              vm.$store.dispatch('messageModules/updateMessage', { message, success })
+              vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
               vm.$store.dispatch('upadateisLoad', false)
             }
           },
@@ -199,15 +204,15 @@ export default {
           if (response.data.success && response.data.mode === 'press') {
             let message = '按讚'
             let success = 'success'
-            vm.$store.dispatch('messageModules/updateMessage', { message, success })
+            vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
           } else if (response.data.success && response.data.mode === 'takeback') {
             let message = '收回讚'
             let success = 'success'
-            vm.$store.dispatch('messageModules/updateMessage', { message, success })
+            vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
           } else {
             let message = response.message
             let success = 'danger'
-            vm.$store.dispatch('messageModules/updateMessage', { message, success })
+            vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
           }
           vm.getArticleCon()
         })
@@ -247,7 +252,7 @@ export default {
         error: function (response) {
           let message = '留言載入錯誤，請稍後在試一次或者聯絡客服人員'
           let success = 'danger'
-          vm.$store.dispatch('messageModules/updateMessage', { message, success })
+          vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
         }
       })
     },
@@ -282,11 +287,11 @@ export default {
           let message = response.message
           if (response.success) {
             let success = 'success'
-            vm.$store.dispatch('messageModules/updateMessage', { message, success })
+            vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
             vm.getMessage()
           } else {
             let success = 'danger'
-            vm.$store.dispatch('messageModules/updateMessage', { message, success })
+            vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
             vm.$store.dispatch('upadateisLoad', false)
           }
         },
@@ -313,11 +318,11 @@ export default {
           let message = response.message
           if (response.success) {
             let success = 'success'
-            vm.$store.dispatch('messageModules/updateMessage', { message, success })
+            vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
             vm.getMessage()
           } else {
             let success = 'danger'
-            vm.$store.dispatch('messageModules/updateMessage', { message, success })
+            vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
             vm.$store.dispatch('upadateisLoad', false)
           }
         },
@@ -367,10 +372,10 @@ export default {
           let message = response.message
           if (response.success) {
             let success = 'success'
-            vm.$store.dispatch('messageModules/updateMessage', { message, success })
+            vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
           } else {
             let success = 'danger'
-            vm.$store.dispatch('messageModules/updateMessage', { message, success })
+            vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
           }
         },
         error: function (response) {
@@ -403,18 +408,18 @@ export default {
             if (response.success) {
               let message = response.message
               let success = 'success'
-              vm.$store.dispatch('messageModules/updateMessage', { message, success })
+              vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
             } else {
               let message = response.message
               let success = 'success'
-              vm.$store.dispatch('messageModules/updateMessage', { message, success })
+              vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
             }
             vm.$store.dispatch('upadateisLoad', false)
           },
           error: function (response) {
             let message = '系統出錯，請稍後在試一次或者聯絡客服人員'
             let success = 'danger'
-            vm.$store.dispatch('messageModules/updateMessage', { message, success })
+            vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
           }
         }).then(() => {
           vm.getMessage()
@@ -452,183 +457,184 @@ export default {
 .articleCon{
   max-width:900px;
   margin:0 auto;
-  .articlePage{
-    background:#fff;
+}
+.articlePage{
+  background:#fff;
+  box-sizing:border-box;
+  padding:30px 50px;
+  background:#fff;
+  border-top-left-radius:10px;
+  border-top-right-radius:10px;
+  .head{
+  }
+  .content{
+    line-height:2;
+  }
+}
+.articlefeatures{
+  background:#fff;
+  padding:0 30px 40px 30px;
+  box-sizing:border-box;
+  div{
+    padding:15px 10px;
+    display:flex;
+    justify-content:space-around;
+    border-top:1px solid #ced0d4;
+    border-bottom:1px solid #ced0d4;
+  }
+  p{
+    margin-bottom:0;
+  }
+  span{
+    font-size: 20px;
+  }
+  a{
     box-sizing:border-box;
-    padding:30px 50px;
-    background:#fff;
-    border-top-left-radius:10px;
-    border-top-right-radius:10px;
-    .head{
+    font-size:20px;
+    margin:0 10px;
+    text-decoration:none;
+    color:#606770;
+    svg{
+      margin-right:10px;
+      color:#CE0000
     }
-    .content{
-      line-height:2;
+    .fa-solid.fa-thumbs-up{
+      color:#CE0000
+    }
+    .fa-solid.fa-star{
+      color:#EAC100;
     }
   }
-  .articlefeatures{
-    background:#fff;
-    padding:0 30px 40px 30px;
-    box-sizing:border-box;
-    div{
-      padding:15px 10px;
-      display:flex;
-      justify-content:space-around;
-      border-top:1px solid #ced0d4;
-      border-bottom:1px solid #ced0d4;
-    }
-    p{
-      margin-bottom:0;
-    }
-    span{
-      font-size: 20px;
-    }
-    a{
-      box-sizing:border-box;
-      font-size:20px;
-      margin:0 10px;
-      text-decoration:none;
-      color:#606770;
-      i{
-        margin-right:10px;
-      }
-      .fa-solid.fa-thumbs-up{
-        color:#CE0000
-      }
-      .fa-solid.fa-star{
-        color:#EAC100;
-      }
-    }
+}
+.message{
+  box-sizing:border-box;
+  padding:50px 50px 30px 50px;
+  background:#f5f5f5;
+  border-bottom-left-radius:10px;
+  border-bottom-right-radius:10px;
+  &>p{
+    margin-bottom:20px;
   }
-  .message{
-    box-sizing:border-box;
-    padding:50px 50px 30px 50px;
-    background:#f5f5f5;
-    border-bottom-left-radius:10px;
-    border-bottom-right-radius:10px;
-    &>p{
+  ul{
+    padding-left:0;
+    list-style-type:none;
+    &>li{
+      padding:30px 0 0 0;
+      border-top:1px solid #e9e9e9;
+      &:last-Child{
+        border-bottom:1px solid #e9e9e9;
+        margin-bottom:0;
+      }
+      margin-bottom:10px;
+    }
+    .avatar{
+      margin-right:15px;
+      div{
+        width:50px;
+        height:50px;
+        border-radius:99em;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+      }
+      svg{
+        color:#fff;
+        font-size:30px;
+      }
+      .boy{
+        background:#81d4fa;
+      }
+      .girl{
+        background:#f48fb1;
+      }
+    }
+    .mainReply{
       margin-bottom:20px;
     }
-    ul{
-      padding-left:0;
-      list-style-type:none;
-      &>li{
-        padding:30px 0 0 0;
-        border-top:1px solid #e9e9e9;
-        &:last-Child{
-          border-bottom:1px solid #e9e9e9;
-          margin-bottom:0;
-        }
-        margin-bottom:10px;
-      }
-      .avatar{
-        margin-right:15px;
-        div{
-          width:50px;
-          height:50px;
-          border-radius:99em;
-          display:flex;
-          justify-content:center;
-          align-items:center;
-        }
-        i{
-          color:#fff;
-          font-size:30px;
-        }
-        .boy{
-          background:#81d4fa;
-        }
-        .girl{
-          background:#f48fb1;
-        }
-      }
-      .mainReply{
-        margin-bottom:20px;
-      }
-      .mainReply,.reply{
-        display:flex;
-        flex-wrap:wrap;
-        position:relative;
-      }
-      .reply{
-        padding:20px 0;
-        margin-left:60px;
-        em{
-          font-style:normal;
-        }
-        &:last-Child{
-          margin-bottom:0;
-        }
-      }
-      .name{
-        font-size:16px;
-        font-weight:bold;
-        line-height:1;
-        margin-bottom:5px;
-      }
-      .content{
-        font-size:18px;
-        margin-bottom:0px;
-        color:#525252;
-      }
-      .time{
-        font-size:14px;
-        margin-bottom:5px;
-        margin-top:10px;
-        span{
-          &::after{
-            content: "・";
-          }
-        }
-      }
-      .del{
-        position:absolute;
-        top:40%;
-        right:0;
-      }
-      .MSGfeatures{
-        width:100%;
-        i{
-          color:#006aa6;
-        }
-      }
-    }
-    .NewReply{
-      display:none;
-      &>div{
-        display:flex;
-        justify-content:space-between;
-      }
-      input{
-        width:100%;
-        flex-grow:2;
-        flex-shrink:2;
-      }
-      button{
-        flex-shrink:0;
-        width:auto;
-        border:0;
-        box-sizing:border-box;
-        padding:5px 12px;
-        background:#006aa6;
-        color:#fff;
-        border-radius:5px;
-        &:disabled{
-          background:#054a72;
-          color:#999;
-        }
-      }
-    }
-    .newMessage{
-      width:100%;
+    .mainReply,.reply{
+      display:flex;
+      flex-wrap:wrap;
       position:relative;
-      input{
-        width:90%;
-        margin-right:2%;
+    }
+    .reply{
+      padding:20px 0;
+      margin-left:60px;
+      em{
+        font-style:normal;
       }
-      button{
-        width:8%;
-        margin:0 0 0 auto;
+      &:last-Child{
+        margin-bottom:0;
       }
+    }
+    .name{
+      font-size:16px;
+      font-weight:bold;
+      line-height:1;
+      margin-bottom:5px;
+    }
+    .content{
+      font-size:18px;
+      margin-bottom:0px;
+      color:#525252;
+    }
+    .time{
+      font-size:14px;
+      margin-bottom:5px;
+      margin-top:10px;
+      span{
+        &::after{
+          content: "・";
+        }
+      }
+    }
+    .del{
+      position:absolute;
+      top:40%;
+      right:0;
+    }
+    .MSGfeatures{
+      width:100%;
+      i{
+        color:#006aa6;
+      }
+    }
+  }
+  .NewReply{
+    display:none;
+    &>div{
+      display:flex;
+      justify-content:space-between;
+    }
+    input{
+      width:100%;
+      flex-grow:2;
+      flex-shrink:2;
+    }
+    button{
+      flex-shrink:0;
+      width:auto;
+      border:0;
+      box-sizing:border-box;
+      padding:5px 12px;
+      background:#006aa6;
+      color:#fff;
+      border-radius:5px;
+      &:disabled{
+        background:#054a72;
+        color:#999;
+      }
+    }
+  }
+  .newMessage{
+    width:100%;
+    position:relative;
+    input{
+      width:90%;
+      margin-right:2%;
+    }
+    button{
+      width:8%;
+      margin:0 0 0 auto;
     }
   }
 }
@@ -643,54 +649,52 @@ export default {
   }
 }
 @media(max-width:600px){
-  .articleCon{
-    .articlePage{
-      padding: 30px 15px;
-      .head{
-        h2{
-          font-weight:bold;
-          line-height:1.3;
-        }
-        &>h6{
-          margin-top:20px;
-        }
+  .articlePage{
+    padding: 30px 15px;
+    .head{
+      h2{
+        font-weight:bold;
+        line-height:1.3;
+      }
+      &>h6{
+        margin-top:20px;
       }
     }
-    .articlefeatures{
-      padding: 0 15px 20px 15px;
-      div{
-        padding:10px;
+  }
+  .articlefeatures{
+    padding: 0 15px 20px 15px;
+    div{
+      padding:10px;
+    }
+  }
+  .message{
+    padding:20px;
+    ul{
+      .avatar{
+        margin-right:5px;
+        div{
+          width:30px;
+          height:30px;
+        }
+        svg{
+          font-size: 20px;
+        }
+      }
+      .reply{
+        margin-left: 40px;
+        margin-top: 0px !important;
       }
     }
-    .message{
-      padding:20px;
-      ul{
-        .avatar{
-          margin-right:5px;
-          div{
-            width:30px;
-            height:30px;
-          }
-          i{
-            font-size: 20px;
-          }
-        }
-        .reply{
-          margin-left: 40px;
-          margin-top: 0px !important;
-        }
+    .newMessage{
+      text-align:center;
+      input{
+        width:100%;
+        margin-bottom:10px;
+        font-size:20px;
       }
-      .newMessage{
-        text-align:center;
-        input{
-          width:100%;
-          margin-bottom:10px;
-          font-size:20px;
-        }
-        button{
-          width:auto;
-          margin: 0 auto;
-        }
+      button{
+        width:auto;
+        margin: 0 auto;
       }
     }
   }

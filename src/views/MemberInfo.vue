@@ -89,6 +89,9 @@ import { Modal } from 'bootstrap'
 
 export default {
   name: 'memberInfo',
+  metaInfo: {
+    title: '會員資料'
+  },
   data () {
     return {
       memberID: '',

@@ -30,7 +30,6 @@
       練習作業用網站
     </footer>
 
-    <!-- Modal -->
     <div class="modal fade" id="userModal" ref="userModal">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -114,9 +113,14 @@ import $ from 'jquery'
 import { Modal } from 'bootstrap'
 import { mapGetters } from 'vuex'
 import AlertMSG from './components/AlertMSG'
+// import Usermodal from './components/Modal'
 
 export default {
   name: 'App',
+  metaInfo: {
+    title: '拉拉新聞網',
+    titleTemplate: '%s | 拉拉新聞網'
+  },
   data: () => ({
     userMode: 'loginIn',
     logAc: '',
@@ -148,14 +152,14 @@ export default {
         if (response.data[0].message === '註冊成功') {
           let message = response.data[0].message
           let success = 'success'
-          vm.$store.dispatch('messageModules/updateMessage', { message, success })
+          vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
           vm.modal.hide()
           vm.user = {}
           vm.userMode = 'loginIn'
         } else {
           let message = response.data[0].message
           let success = 'danger'
-          vm.$store.dispatch('messageModules/updateMessage', { message, success })
+          vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
         }
         vm.$store.dispatch('upadateisLoad', false)
       })
@@ -175,7 +179,7 @@ export default {
         if (response.data.success) {
           let message = response.data.message
           let success = 'success'
-          vm.$store.dispatch('messageModules/updateMessage', { message, success })
+          vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
           vm.logAc = ''
           vm.logPwd = ''
           vm.userID = response.data.userID
@@ -187,7 +191,7 @@ export default {
         } else {
           let message = response.data.message
           let success = 'danger'
-          vm.$store.dispatch('messageModules/updateMessage', { message, success })
+          vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
           vm.modal.hide()
         }
         vm.$store.dispatch('upadateisLoad', false)
@@ -212,7 +216,7 @@ export default {
           vm.user = {}
           let message = response.data.message
           let success = 'success'
-          vm.$store.dispatch('messageModules/updateMessage', { message, success })
+          vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
         }
         // 登出後 看要回此頁，但是不可在使用者頁面
         if (vm.$route.name === 'MemberInfo') {

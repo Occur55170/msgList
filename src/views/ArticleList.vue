@@ -43,6 +43,9 @@ import $ from 'jquery'
 
 export default {
   name: 'articleList',
+  metaInfo: {
+    title: '新聞總覽'
+  },
   data () {
     return {
       sortName: '',
@@ -74,7 +77,7 @@ export default {
         error: function (response) {
           let message = '文章列表載入錯誤，請稍後在試一次或者聯絡客服人員'
           let success = 'danger'
-          vm.$store.dispatch('messageModules/updateMessage', { message, success })
+          vm.$store.dispatch('AlertMSGModules/updateMessage', { message, success })
         }
       })
     },
@@ -282,9 +285,6 @@ export default {
     }
     section{
       margin-right:2%;
-      article{
-        .articleImg{}
-      }
     }
   }
 }
