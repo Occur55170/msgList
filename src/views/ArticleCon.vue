@@ -17,13 +17,23 @@
       <div>
         <p>
           <a href="#" @click.prevent="articleLike" class="good">
-            <span v-if="article.likeList.indexOf(`${ userID }`) !== -1 && userID !== ''"><i is="font-awesome-icon" icon="fa-solid fa-thumbs-up" />{{ article.likeList.length }}</span>
-            <span v-else><i is="font-awesome-icon" icon="fa-regular fa-thumbs-up" />{{ article.likeList.length }}</span>
+            <span class="addGd" v-if="article.likeList.indexOf(`${ userID }`) !== -1 && userID !== ''">
+              <i is="font-awesome-icon" icon="fa-solid fa-thumbs-up" />{{ article.likeList.length }}
+            </span>
+            <span class="rmGd" v-else>
+              <i is="font-awesome-icon" icon="fa-regular fa-thumbs-up" />{{ article.likeList.length }}
+            </span>
           </a>
         </p>
         <p>
-          <a href="#" @click.prevent="articleCollect" class="collect" v-if="article.collect.indexOf(JSON.stringify(userID)) !== -1 && userID !== ''"><i class="fa-solid fa-star"></i>取消收藏</a>
-          <a href="#" @click.prevent="articleCollect" class="collect" v-else><i is="font-awesome-icon" icon="fa-solid fa-star" />收藏</a>
+          <a href="#" @click.prevent="articleCollect" class="collect">
+            <span v-if="article.collect.indexOf(JSON.stringify(userID)) !== -1 && userID !== ''">
+              <i is="font-awesome-icon" icon="fa-solid fa-star" />取消收藏
+            </span>
+            <span v-else>
+              <i is="font-awesome-icon" icon="fa-solid fa-star" />收藏
+            </span>
+          </a>
         </p>
       </div>
     </div>
@@ -50,7 +60,7 @@
                 {{ item.mainMsg.good.length }}
               </div>
             </div>
-            <a href="#" class="del" @click.prevent="delMessage(item.mainMsg.msgID)" v-if="item.mainMsg.userID == userID">刪除</a>
+            <a href="#" class="del" @click.prevent="delMessage(item.mainMsg.msgID)" v-if="item.mainMsg.userID == userID"><font-awesome-icon icon="fa-solid fa-trash-can" class="" /></a>
           </div>
           <div class="NewReply" :class="`reply-${key}`">
             <div>
@@ -76,7 +86,7 @@
                 {{ reply.good.length }}
               </div>
             </div>
-            <a href="#" class="del" @click.prevent="delMessage(reply.msgID)" v-if="reply.userID == userID">刪除</a>
+            <a href="#" class="del" @click.prevent="delMessage(reply.msgID)" v-if="reply.userID == userID"><font-awesome-icon icon="fa-solid fa-trash-can" /></a>
           </div>
         </li>
       </ul>
@@ -496,12 +506,17 @@ export default {
     color:#606770;
     svg{
       margin-right:10px;
-      color:#CE0000
     }
-    .fa-solid.fa-thumbs-up{
-      color:#CE0000
+    .addGd{
+      color:#CE0000;
     }
-    .fa-solid.fa-star{
+    .rmGd{
+      color:#606770;
+    }
+    .adCt{
+      color:#CE0000;
+    }
+    .rmCt{
       color:#EAC100;
     }
   }
