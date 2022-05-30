@@ -66,6 +66,7 @@
 * [vuex] | 管理 vue 網站狀態
 * [gh-pages] | 將編譯後的程式碼佈署到 gh-pages
 * [jQuery] | 處理網站版面的相關功能以及ajax串接
+* [vue-meta](https://www.npmjs.com/package/vue-meta) | 動態切換meta
 
 
 ## 環境建構
