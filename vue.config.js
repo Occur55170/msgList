@@ -1,3 +1,6 @@
 module.exports = {
-  publicPath: '/msgList/'
+  publicPath: '/msgList/',
+  build: {
+    outDir: 'docs'
+  }
 }
