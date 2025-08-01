@@ -32,6 +32,8 @@
 使用Vue前端框架，讓協作開發與日後擴充修改更容易，並提供更平順的瀏覽體驗
 
 * 程式相關
+  * node version 16
+  * vue version 2
   * Vue CLI 3 : 整合 Vue 生態系的開發環境
   * Vue Component: 將 Web 應用元件化，方便管理、協作
   * Vue Router: 管理前端路由
