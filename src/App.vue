@@ -118,8 +118,8 @@ import AlertMSG from './components/AlertMSG'
 export default {
   name: 'App',
   metaInfo: {
-    title: '拉拉新聞網',
-    titleTemplate: '%s | 拉拉新聞網'
+    title: '拉拉新聞',
+    titleTemplate: '%s | 拉拉新聞'
   },
   data: () => ({
     userMode: 'loginIn',
