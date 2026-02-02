@@ -5,7 +5,7 @@
       <div>
         <div class="logo">
           <RouterLink to="/">
-            <img src="@/assets/logo.png" alt="">
+            <img src="@/assets/logo.png" alt="拉拉新聞網">
           </RouterLink>
         </div>
         <div class="searchBar">
@@ -118,8 +118,8 @@ import AlertMSG from './components/AlertMSG'
 export default {
   name: 'App',
   metaInfo: {
-    title: '拉拉新聞',
-    titleTemplate: '%s | 拉拉新聞'
+    title: '拉拉新聞網',
+    titleTemplate: '%s | 拉拉新聞網'
   },
   data: () => ({
     userMode: 'loginIn',
