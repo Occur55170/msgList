@@ -27,7 +27,7 @@
       <RouterView class="section" :searchText="searchText" :userID="userID" :user="user" @openLoginIn="openLoginIn"></RouterView>
     </main>
     <footer>
-      練習作業用網站
+      練習作業用網站 &copy; 2024 拉拉新聞網
     </footer>
 
     <div class="modal fade" id="userModal" ref="userModal">
